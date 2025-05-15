@@ -47,17 +47,22 @@ Project Organization
     │   │   └── train_model.py
     │   └── config         <- Describe the parameters used in train_model.py and predict_model.py
 
+## Python Version
+
+This project requires Python 3.12 or later.
+
 --------
 
 Once you have downloaded the github repo, open the anaconda powershell on the root of the project and follow those instructions :
 
-> `conda create -n "Rakuten-project"`    <- It will create your conda environement
+> `python3 -m venv .venv`      <- It will create a virtual environment named .venv
 
-> `conda activate Rakuten-project`       <- It will activate your environment
-
-> `conda install pip`                    <- May be optionnal
+> `source .venv/bin/activate`  <- It will activate the virtual environment (Linux/Mac)
+> `.venv\Scripts\activate`     <- It will activate the virtual environment (Windows)
 
 > `pip install -r requirements.txt`      <- It will install the required packages
+
+> `python -m nltk.downloader punkt`      <- It will download the punkt tokenizer for nltk
 
 > `python src/data/import_raw_data.py`   <- It will import the tabular data on data/raw/
 
