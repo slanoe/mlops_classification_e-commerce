@@ -198,7 +198,7 @@ class concatenate:
         # Réinitialiser les index des DataFrames
         new_X_train = new_X_train.reset_index(drop=True)
         new_y_train = new_y_train.reset_index(drop=True)
-        new_y_train = new_y_train.values.reshape(1350).astype("int")
+        new_y_train = new_y_train.values.reshape(new_samples_per_class * num_classes).astype("int")
 
         # Charger les modèles préalablement sauvegardés
         tokenizer = self.tokenizer
