@@ -54,11 +54,13 @@ This project requires Python 3.10.
 --------
 
 > `sudo apt update && sudo apt install python3.10 python3.10-venv python3.10-dev && sudo apt install python3-virtualenv`      <- It will install Python 3.10 and virtualenv
+
 > `pip install "setuptools<66"`      <- It will downgrade setuptools
 
 > `virtualenv -p python3.10 .venv`      <- It will create a virtual environment named .venv
 
 > `source .venv/bin/activate`  <- It will activate the virtual environment (Linux/Mac)
+
 > `.venv\Scripts\activate`     <- It will activate the virtual environment (Windows)
 
 > `pip install -r requirements.txt`      <- It will install the required packages
