@@ -1,0 +1,456 @@
+{
+  "configuration" : { },
+  "description" : "Description",
+  "documentation" : { },
+  "id" : 1,
+  "lastModifiedAgent" : "structurizr-ui",
+  "lastModifiedDate" : "2025-05-10T17:45:53Z",
+  "model" : {
+    "people" : [ {
+      "description" : "Client final du site Rakuten",
+      "id" : "1",
+      "location" : "Unspecified",
+      "name" : "Client Rakuten",
+      "properties" : {
+        "structurizr.dsl.identifier" : "user"
+      },
+      "relationships" : [ {
+        "description" : "Recherche, consulte, reçoit des recommandations",
+        "destinationId" : "4",
+        "id" : "13",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Recherche, consulte, reçoit des recommandations",
+        "destinationId" : "3",
+        "id" : "14",
+        "linkedRelationshipId" : "13",
+        "sourceId" : "1"
+      } ],
+      "tags" : "Element,Person,Utilisateur"
+    }, {
+      "description" : "Administrateur et équipe Data/DevOps",
+      "id" : "2",
+      "location" : "Unspecified",
+      "name" : "Admin / MLOps",
+      "properties" : {
+        "structurizr.dsl.identifier" : "admin"
+      },
+      "relationships" : [ {
+        "description" : "Ajoute des produits, supervise, déclenche réentraînements",
+        "destinationId" : "4",
+        "id" : "15",
+        "sourceId" : "2",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Ajoute des produits, supervise, déclenche réentraînements",
+        "destinationId" : "3",
+        "id" : "16",
+        "linkedRelationshipId" : "15",
+        "sourceId" : "2"
+      }, {
+        "description" : "Planifie les entraînements",
+        "destinationId" : "12",
+        "id" : "17",
+        "sourceId" : "2",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Person,Utilisateur"
+    } ],
+    "softwareSystems" : [ {
+      "containers" : [ {
+        "description" : "Interface utilisateur (Streamlit) pour recherche, recommandations, visualisation, monitoring",
+        "documentation" : { },
+        "id" : "4",
+        "name" : "Application Web",
+        "properties" : {
+          "structurizr.dsl.identifier" : "webapp"
+        },
+        "relationships" : [ {
+          "description" : "Appelle l'API",
+          "destinationId" : "5",
+          "id" : "18",
+          "sourceId" : "4",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container,WebApp",
+        "technology" : "Streamlit"
+      }, {
+        "components" : [ {
+          "description" : "Gère la logique de prédiction",
+          "documentation" : { },
+          "id" : "6",
+          "name" : "Contrôleur de classification",
+          "properties" : {
+            "structurizr.dsl.identifier" : "classifier"
+          },
+          "relationships" : [ {
+            "description" : "Appelle le modèle IA",
+            "destinationId" : "7",
+            "id" : "26",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component,Composant",
+          "technology" : "Python"
+        }, {
+          "description" : "Appelle le modèle Keras pour effectuer la classification",
+          "documentation" : { },
+          "id" : "7",
+          "name" : "Model Wrapper",
+          "properties" : {
+            "structurizr.dsl.identifier" : "modelwrapper"
+          },
+          "relationships" : [ {
+            "description" : "Requête de prédiction",
+            "destinationId" : "8",
+            "id" : "27",
+            "sourceId" : "7",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component,Composant",
+          "technology" : "Keras"
+        } ],
+        "description" : "API REST orchestrant les traitements (prédiction, ajout, requêtage)",
+        "documentation" : { },
+        "id" : "5",
+        "name" : "API FastAPI",
+        "properties" : {
+          "structurizr.dsl.identifier" : "api"
+        },
+        "relationships" : [ {
+          "description" : "Requête de prédiction",
+          "destinationId" : "8",
+          "id" : "19",
+          "sourceId" : "5",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Lit / écrit des données",
+          "destinationId" : "9",
+          "id" : "20",
+          "sourceId" : "5",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Accède aux images",
+          "destinationId" : "10",
+          "id" : "21",
+          "sourceId" : "5",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container,API",
+        "technology" : "Python (FastAPI)"
+      }, {
+        "description" : "Modèle de classification (Keras + BentoML) entraîné sur données multimodales",
+        "documentation" : { },
+        "id" : "8",
+        "name" : "Modèle IA",
+        "properties" : {
+          "structurizr.dsl.identifier" : "mlmodel"
+        },
+        "relationships" : [ {
+          "description" : "Envoie des métriques",
+          "destinationId" : "11",
+          "id" : "22",
+          "sourceId" : "8",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container,IA",
+        "technology" : "Keras + BentoML"
+      }, {
+        "description" : "Stocke les produits, les prédictions et les logs",
+        "documentation" : { },
+        "id" : "9",
+        "name" : "Base de Données PostgreSQL",
+        "properties" : {
+          "structurizr.dsl.identifier" : "database"
+        },
+        "tags" : "Element,Container,BDD",
+        "technology" : "PostgreSQL"
+      }, {
+        "description" : "Contient les images des produits (Google Drive intégré au pipeline)",
+        "documentation" : { },
+        "id" : "10",
+        "name" : "Stockage d'images",
+        "properties" : {
+          "structurizr.dsl.identifier" : "storage"
+        },
+        "tags" : "Element,Container,Stockage",
+        "technology" : "Google Drive"
+      }, {
+        "description" : "Composants de surveillance (Prometheus, Grafana, Evidently)",
+        "documentation" : { },
+        "id" : "11",
+        "name" : "Monitoring & Supervision",
+        "properties" : {
+          "structurizr.dsl.identifier" : "monitoring"
+        },
+        "tags" : "Element,Container,Monitoring",
+        "technology" : "Prometheus, Grafana, Evidently"
+      }, {
+        "description" : "Orchestration via Airflow, ZenML pour ingestion, entraînement, déploiement",
+        "documentation" : { },
+        "id" : "12",
+        "name" : "Pipeline MLOps",
+        "properties" : {
+          "structurizr.dsl.identifier" : "pipeline"
+        },
+        "relationships" : [ {
+          "description" : "Réentraîne le modèle",
+          "destinationId" : "8",
+          "id" : "23",
+          "sourceId" : "12",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Utilise les jeux de données",
+          "destinationId" : "9",
+          "id" : "24",
+          "sourceId" : "12",
+          "tags" : "Relationship"
+        }, {
+          "description" : "Surveille les performances",
+          "destinationId" : "11",
+          "id" : "25",
+          "sourceId" : "12",
+          "tags" : "Relationship"
+        } ],
+        "tags" : "Element,Container,Pipeline",
+        "technology" : "Airflow + ZenML"
+      } ],
+      "description" : "Plateforme MLOps de classification automatique de produits via données textuelles et images.",
+      "documentation" : { },
+      "id" : "3",
+      "location" : "Unspecified",
+      "name" : "Système de classification Rakuten",
+      "properties" : {
+        "structurizr.dsl.identifier" : "rakutensystem"
+      },
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "Name",
+  "properties" : {
+    "structurizr.dsl" : "d29ya3NwYWNlIHsKCiAgICBtb2RlbCB7CiAgICAgICAgdXNlciA9IHBlcnNvbiAiQ2xpZW50IFJha3V0ZW4iIHsKICAgICAgICAgICAgZGVzY3JpcHRpb24gIkNsaWVudCBmaW5hbCBkdSBzaXRlIFJha3V0ZW4iCiAgICAgICAgICAgIHRhZ3MgIlV0aWxpc2F0ZXVyIgogICAgICAgIH0KCiAgICAgICAgYWRtaW4gPSBwZXJzb24gIkFkbWluIC8gTUxPcHMiIHsKICAgICAgICAgICAgZGVzY3JpcHRpb24gIkFkbWluaXN0cmF0ZXVyIGV0IMOpcXVpcGUgRGF0YS9EZXZPcHMiCiAgICAgICAgICAgIHRhZ3MgIlV0aWxpc2F0ZXVyIgogICAgICAgIH0KCiAgICAgICAgcmFrdXRlblN5c3RlbSA9IHNvZnR3YXJlU3lzdGVtICJTeXN0w6htZSBkZSBjbGFzc2lmaWNhdGlvbiBSYWt1dGVuIiB7CiAgICAgICAgICAgIGRlc2NyaXB0aW9uICJQbGF0ZWZvcm1lIE1MT3BzIGRlIGNsYXNzaWZpY2F0aW9uIGF1dG9tYXRpcXVlIGRlIHByb2R1aXRzIHZpYSBkb25uw6llcyB0ZXh0dWVsbGVzIGV0IGltYWdlcy4iCgogICAgICAgICAgICB3ZWJBcHAgPSBjb250YWluZXIgIkFwcGxpY2F0aW9uIFdlYiIgewogICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkludGVyZmFjZSB1dGlsaXNhdGV1ciAoU3RyZWFtbGl0KSBwb3VyIHJlY2hlcmNoZSwgcmVjb21tYW5kYXRpb25zLCB2aXN1YWxpc2F0aW9uLCBtb25pdG9yaW5nIgogICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiU3RyZWFtbGl0IgogICAgICAgICAgICAgICAgdGFncyAiV2ViQXBwIgogICAgICAgICAgICB9CgogICAgICAgICAgICBhcGkgPSBjb250YWluZXIgIkFQSSBGYXN0QVBJIiB7CiAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiQVBJIFJFU1Qgb3JjaGVzdHJhbnQgbGVzIHRyYWl0ZW1lbnRzIChwcsOpZGljdGlvbiwgYWpvdXQsIHJlcXXDqnRhZ2UpIgogICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiUHl0aG9uIChGYXN0QVBJKSIKICAgICAgICAgICAgICAgIHRhZ3MgIkFQSSIKCiAgICAgICAgICAgICAgICBjbGFzc2lmaWVyID0gY29tcG9uZW50ICJDb250csO0bGV1ciBkZSBjbGFzc2lmaWNhdGlvbiIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJHw6hyZSBsYSBsb2dpcXVlIGRlIHByw6lkaWN0aW9uIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlB5dGhvbiIKICAgICAgICAgICAgICAgICAgICB0YWdzICJDb21wb3NhbnQiCiAgICAgICAgICAgICAgICB9CgogICAgICAgICAgICAgICAgbW9kZWxXcmFwcGVyID0gY29tcG9uZW50ICJNb2RlbCBXcmFwcGVyIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkFwcGVsbGUgbGUgbW9kw6hsZSBLZXJhcyBwb3VyIGVmZmVjdHVlciBsYSBjbGFzc2lmaWNhdGlvbiIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJLZXJhcyIKICAgICAgICAgICAgICAgICAgICB0YWdzICJDb21wb3NhbnQiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIG1sTW9kZWwgPSBjb250YWluZXIgIk1vZMOobGUgSUEiIHsKICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJNb2TDqGxlIGRlIGNsYXNzaWZpY2F0aW9uIChLZXJhcyArIEJlbnRvTUwpIGVudHJhw65uw6kgc3VyIGRvbm7DqWVzIG11bHRpbW9kYWxlcyIKICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIktlcmFzICsgQmVudG9NTCIKICAgICAgICAgICAgICAgIHRhZ3MgIklBIgogICAgICAgICAgICB9CgogICAgICAgICAgICBkYXRhYmFzZSA9IGNvbnRhaW5lciAiQmFzZSBkZSBEb25uw6llcyBQb3N0Z3JlU1FMIiB7CiAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiU3RvY2tlIGxlcyBwcm9kdWl0cywgbGVzIHByw6lkaWN0aW9ucyBldCBsZXMgbG9ncyIKICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlBvc3RncmVTUUwiCiAgICAgICAgICAgICAgICB0YWdzICJCREQiCiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIHN0b3JhZ2UgPSBjb250YWluZXIgIlN0b2NrYWdlIGQnaW1hZ2VzIiB7CiAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiQ29udGllbnQgbGVzIGltYWdlcyBkZXMgcHJvZHVpdHMgKEdvb2dsZSBEcml2ZSBpbnTDqWdyw6kgYXUgcGlwZWxpbmUpIgogICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiR29vZ2xlIERyaXZlIgogICAgICAgICAgICAgICAgdGFncyAiU3RvY2thZ2UiCiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIG1vbml0b3JpbmcgPSBjb250YWluZXIgIk1vbml0b3JpbmcgJiBTdXBlcnZpc2lvbiIgewogICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkNvbXBvc2FudHMgZGUgc3VydmVpbGxhbmNlIChQcm9tZXRoZXVzLCBHcmFmYW5hLCBFdmlkZW50bHkpIgogICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiUHJvbWV0aGV1cywgR3JhZmFuYSwgRXZpZGVudGx5IgogICAgICAgICAgICAgICAgdGFncyAiTW9uaXRvcmluZyIKICAgICAgICAgICAgfQoKICAgICAgICAgICAgcGlwZWxpbmUgPSBjb250YWluZXIgIlBpcGVsaW5lIE1MT3BzIiB7CiAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiT3JjaGVzdHJhdGlvbiB2aWEgQWlyZmxvdywgWmVuTUwgcG91ciBpbmdlc3Rpb24sIGVudHJhw65uZW1lbnQsIGTDqXBsb2llbWVudCIKICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkFpcmZsb3cgKyBaZW5NTCIKICAgICAgICAgICAgICAgIHRhZ3MgIlBpcGVsaW5lIgogICAgICAgICAgICB9CgogICAgICAgICAgICAvLyBSZWxhdGlvbnMgZGUgbml2ZWF1IGNvbnRlbmV1cgogICAgICAgICAgICB1c2VyIC0+IHdlYkFwcCAiUmVjaGVyY2hlLCBjb25zdWx0ZSwgcmXDp29pdCBkZXMgcmVjb21tYW5kYXRpb25zIgogICAgICAgICAgICBhZG1pbiAtPiB3ZWJBcHAgIkFqb3V0ZSBkZXMgcHJvZHVpdHMsIHN1cGVydmlzZSwgZMOpY2xlbmNoZSByw6llbnRyYcOubmVtZW50cyIKICAgICAgICAgICAgYWRtaW4gLT4gcGlwZWxpbmUgIlBsYW5pZmllIGxlcyBlbnRyYcOubmVtZW50cyIKCiAgICAgICAgICAgIHdlYkFwcCAtPiBhcGkgIkFwcGVsbGUgbCdBUEkiCiAgICAgICAgICAgIGFwaSAtPiBtbE1vZGVsICJSZXF1w6p0ZSBkZSBwcsOpZGljdGlvbiIKICAgICAgICAgICAgYXBpIC0+IGRhdGFiYXNlICJMaXQgLyDDqWNyaXQgZGVzIGRvbm7DqWVzIgogICAgICAgICAgICBhcGkgLT4gc3RvcmFnZSAiQWNjw6hkZSBhdXggaW1hZ2VzIgoKICAgICAgICAgICAgbWxNb2RlbCAtPiBtb25pdG9yaW5nICJFbnZvaWUgZGVzIG3DqXRyaXF1ZXMiCiAgICAgICAgICAgIHBpcGVsaW5lIC0+IG1sTW9kZWwgIlLDqWVudHJhw65uZSBsZSBtb2TDqGxlIgogICAgICAgICAgICBwaXBlbGluZSAtPiBkYXRhYmFzZSAiVXRpbGlzZSBsZXMgamV1eCBkZSBkb25uw6llcyIKICAgICAgICAgICAgcGlwZWxpbmUgLT4gbW9uaXRvcmluZyAiU3VydmVpbGxlIGxlcyBwZXJmb3JtYW5jZXMiCgogICAgICAgICAgICAvLyBSZWxhdGlvbnMgZW50cmUgY29tcG9zYW50cyBpbnRlcm5lcwogICAgICAgICAgICBjbGFzc2lmaWVyIC0+IG1vZGVsV3JhcHBlciAiQXBwZWxsZSBsZSBtb2TDqGxlIElBIgogICAgICAgICAgICBtb2RlbFdyYXBwZXIgLT4gbWxNb2RlbCAiUmVxdcOqdGUgZGUgcHLDqWRpY3Rpb24iCiAgICAgICAgfQogICAgfQoKICAgIHZpZXdzIHsKCiAgICAgICAgc3lzdGVtQ29udGV4dCByYWt1dGVuU3lzdGVtIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9sYXlvdXQgbHIKICAgICAgICAgICAgdGl0bGUgIkNvbnRleHRlIFN5c3TDqG1lIFJha3V0ZW4iCiAgICAgICAgfQoKICAgICAgICBjb250YWluZXIgcmFrdXRlblN5c3RlbSB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhdXRvbGF5b3V0IGxyCiAgICAgICAgICAgIHRpdGxlICJWdWUgQ29udGVuZXVycyAtIFN5c3TDqG1lIFJha3V0ZW4iCiAgICAgICAgfQoKICAgICAgICBjb21wb25lbnQgYXBpIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9sYXlvdXQgbHIKICAgICAgICAgICAgdGl0bGUgIlZ1ZSBDb21wb3NhbnRzIC0gQVBJIEZhc3RBUEkiCiAgICAgICAgfQoKICAgICAgICBzdHlsZXMgewogICAgICAgICAgICBlbGVtZW50ICJVdGlsaXNhdGV1ciIgewogICAgICAgICAgICAgICAgc2hhcGUgIlBlcnNvbiIKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIiM2ZDllZWIiCiAgICAgICAgICAgICAgICBjb2xvciAiI2ZmZmZmZiIKICAgICAgICAgICAgfQoKICAgICAgICAgICAgZWxlbWVudCAiV2ViQXBwIiB7CiAgICAgICAgICAgICAgICBzaGFwZSAiV2ViQnJvd3NlciIKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIiMxMTU1Y2MiCiAgICAgICAgICAgICAgICBjb2xvciAiI2ZmZmZmZiIKICAgICAgICAgICAgfQoKICAgICAgICAgICAgZWxlbWVudCAiQVBJIiB7CiAgICAgICAgICAgICAgICBzaGFwZSAiSGV4YWdvbiIKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIiMzYzc4ZDgiCiAgICAgICAgICAgICAgICBjb2xvciAiI2ZmZmZmZiIKICAgICAgICAgICAgfQoKICAgICAgICAgICAgZWxlbWVudCAiQ29tcG9zYW50IiB7CiAgICAgICAgICAgICAgICBzaGFwZSAiQ29tcG9uZW50IgogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAiI2NmZTJmMyIKICAgICAgICAgICAgICAgIGNvbG9yICIjMDAwMDAwIgogICAgICAgICAgICB9CgogICAgICAgICAgICBlbGVtZW50ICJJQSIgewogICAgICAgICAgICAgICAgc2hhcGUgIlJvdW5kZWRCb3giCiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICIjZDllYWQzIgogICAgICAgICAgICAgICAgY29sb3IgIiMwMDAwMDAiCiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIGVsZW1lbnQgIkJERCIgewogICAgICAgICAgICAgICAgc2hhcGUgIkN5bGluZGVyIgogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAiI2Y5Y2I5YyIKICAgICAgICAgICAgICAgIGNvbG9yICIjMDAwMDAwIgogICAgICAgICAgICB9CgogICAgICAgICAgICBlbGVtZW50ICJNb25pdG9yaW5nIiB7CiAgICAgICAgICAgICAgICBzaGFwZSAiUGlwZSIKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIiNmNGNjY2MiCiAgICAgICAgICAgICAgICBjb2xvciAiIzAwMDAwMCIKICAgICAgICAgICAgfQoKICAgICAgICAgICAgZWxlbWVudCAiUGlwZWxpbmUiIHsKICAgICAgICAgICAgICAgIHNoYXBlICJCb3giCiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICIjZDBlMGUzIgogICAgICAgICAgICAgICAgY29sb3IgIiMwMDAwMDAiCiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIGVsZW1lbnQgIlN0b2NrYWdlIiB7CiAgICAgICAgICAgICAgICBzaGFwZSAiRm9sZGVyIgogICAgICAgICAgICAgICAgYmFja2dyb3VuZCAiI2YzZjNmMyIKICAgICAgICAgICAgICAgIGNvbG9yICIjMzMzMzMzIgogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQp9"
+  },
+  "views" : {
+    "componentViews" : [ {
+      "automaticLayout" : {
+        "applied" : true,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "5",
+      "dimensions" : {
+        "height" : 811,
+        "width" : 2370
+      },
+      "elements" : [ {
+        "id" : "6",
+        "x" : 219,
+        "y" : 185
+      }, {
+        "id" : "7",
+        "x" : 969,
+        "y" : 185
+      }, {
+        "id" : "8",
+        "x" : 1719,
+        "y" : 185
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "generatedKey" : true,
+      "key" : "Component-001",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "26"
+      }, {
+        "id" : "27"
+      } ],
+      "title" : "Vue Composants - API FastAPI"
+    } ],
+    "configuration" : {
+      "branding" : { },
+      "lastSavedView" : "Container-001",
+      "metadataSymbols" : "SquareBrackets",
+      "styles" : {
+        "elements" : [ {
+          "background" : "#6d9eeb",
+          "color" : "#ffffff",
+          "shape" : "Person",
+          "tag" : "Utilisateur"
+        }, {
+          "background" : "#1155cc",
+          "color" : "#ffffff",
+          "shape" : "WebBrowser",
+          "tag" : "WebApp"
+        }, {
+          "background" : "#3c78d8",
+          "color" : "#ffffff",
+          "shape" : "Hexagon",
+          "tag" : "API"
+        }, {
+          "background" : "#cfe2f3",
+          "color" : "#000000",
+          "shape" : "Component",
+          "tag" : "Composant"
+        }, {
+          "background" : "#d9ead3",
+          "color" : "#000000",
+          "shape" : "RoundedBox",
+          "tag" : "IA"
+        }, {
+          "background" : "#f9cb9c",
+          "color" : "#000000",
+          "shape" : "Cylinder",
+          "tag" : "BDD"
+        }, {
+          "background" : "#f4cccc",
+          "color" : "#000000",
+          "shape" : "Pipe",
+          "tag" : "Monitoring"
+        }, {
+          "background" : "#d0e0e3",
+          "color" : "#000000",
+          "shape" : "Box",
+          "tag" : "Pipeline"
+        }, {
+          "background" : "#f3f3f3",
+          "color" : "#333333",
+          "shape" : "Folder",
+          "tag" : "Stockage"
+        } ]
+      },
+      "terminology" : { }
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "applied" : true,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "dimensions" : {
+        "height" : 2101,
+        "width" : 3820
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 200,
+        "y" : 639
+      }, {
+        "id" : "2",
+        "x" : 200,
+        "y" : 1339
+      }, {
+        "id" : "4",
+        "x" : 900,
+        "y" : 785
+      }, {
+        "id" : "5",
+        "x" : 1650,
+        "y" : 785
+      }, {
+        "id" : "8",
+        "x" : 2400,
+        "y" : 785
+      }, {
+        "id" : "9",
+        "x" : 2400,
+        "y" : 1385
+      }, {
+        "id" : "10",
+        "x" : 2400,
+        "y" : 185
+      }, {
+        "id" : "11",
+        "x" : 3150,
+        "y" : 1239
+      }, {
+        "id" : "12",
+        "x" : 1650,
+        "y" : 1385
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "generatedKey" : true,
+      "key" : "Container-001",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "13"
+      }, {
+        "id" : "15"
+      }, {
+        "id" : "17"
+      }, {
+        "id" : "18"
+      }, {
+        "id" : "19"
+      }, {
+        "id" : "20"
+      }, {
+        "id" : "21"
+      }, {
+        "id" : "22"
+      }, {
+        "id" : "23"
+      }, {
+        "id" : "24"
+      }, {
+        "id" : "25",
+        "vertices" : [ {
+          "x" : 2400,
+          "y" : 1835
+        }, {
+          "x" : 2850,
+          "y" : 1835
+        } ]
+      } ],
+      "softwareSystemId" : "3",
+      "title" : "Vue Conteneurs - Système Rakuten"
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "applied" : true,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "dimensions" : {
+        "height" : 1500,
+        "width" : 1550
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 199,
+        "y" : 165
+      }, {
+        "id" : "2",
+        "x" : 199,
+        "y" : 865
+      }, {
+        "id" : "3",
+        "x" : 899,
+        "y" : 565
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "generatedKey" : true,
+      "key" : "SystemContext-001",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "14"
+      }, {
+        "id" : "16"
+      } ],
+      "softwareSystemId" : "3",
+      "title" : "Contexte Système Rakuten"
+    } ]
+  }
+}
