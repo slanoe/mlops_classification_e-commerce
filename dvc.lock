@@ -18,3 +18,50 @@ stages:
       md5: 088449c5d4a8a10e89ac6ec42f2e878c.dir
       size: 2687848905
       nfiles: 98731
+  train:
+    cmd: python src/main.py
+    deps:
+    - path: data/preprocessed
+      hash: md5
+      md5: 088449c5d4a8a10e89ac6ec42f2e878c.dir
+      size: 2687848905
+      nfiles: 98731
+    - path: src/features
+      hash: md5
+      md5: ff579a303263b783dfc43e4580560f81.dir
+      size: 15667
+      nfiles: 6
+    - path: src/main.py
+      hash: md5
+      md5: 4a11b652a9d6191577e73f00231f7f6f
+      size: 2250
+    - path: src/models
+      hash: md5
+      md5: f3e223afecfb42bd9701faa8a41a957c.dir
+      size: 26066
+      nfiles: 6
+    outs:
+    - path: models/best_lstm_model.h5
+      hash: md5
+      md5: 4fa804758c36883f446a28539b5b90d2
+      size: 17014032
+    - path: models/best_vgg16_model.h5
+      hash: md5
+      md5: 3ae7372ad85bf5b17c7a104a3e918e81
+      size: 136110224
+    - path: models/best_weights.pkl
+      hash: md5
+      md5: 33ce14e1873859f6c86ff8177d0c68c8
+      size: 137
+    - path: models/concatenate.h5
+      hash: md5
+      md5: 6bbfda2e962a353ee2354328ecade447
+      size: 10096
+    - path: models/mapper.pkl
+      hash: md5
+      md5: bdc01efbae713fb4c49d7b1dd0d6a2a9
+      size: 668
+    - path: models/tokenizer_config.json
+      hash: md5
+      md5: f7e889097e6c99e6fa84e19bb0259c97
+      size: 1745676
