@@ -26,20 +26,18 @@ stages:
       md5: 088449c5d4a8a10e89ac6ec42f2e878c.dir
       size: 2687848905
       nfiles: 98731
-    - path: src/features
+    - path: src/features/build_features.py
       hash: md5
-      md5: 55bfd4f82a847520833318ffdd68dc34.dir
-      size: 24054
-      nfiles: 8
+      md5: 30d0c1d0c04d16aa8445282a19d557a3
+      size: 4203
     - path: src/main.py
       hash: md5
       md5: 845caa5c7f5f953172fd3b067bc5a185
       size: 2254
-    - path: src/models
+    - path: src/models/train_model.py
       hash: md5
-      md5: 6e4d8f1f124f09c638358c82fc0b659e.dir
-      size: 37443
-      nfiles: 8
+      md5: ca46ccfc8ecd4e1bde266c333bbdef11
+      size: 9392
     outs:
     - path: models/best_lstm_model.h5
       hash: md5
