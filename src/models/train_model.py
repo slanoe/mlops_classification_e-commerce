@@ -76,7 +76,7 @@ class TextLSTMModel:
             [train_padded_sequences],
             tf.keras.utils.to_categorical(y_train, num_classes=27),
             epochs=1,
-            batch_size=32,
+            batch_size=16,
             validation_data=(
                 [val_padded_sequences],
                 tf.keras.utils.to_categorical(y_val, num_classes=27),
@@ -91,7 +91,7 @@ class ImageVGG16Model:
 
     def preprocess_and_fit(self, X_train, y_train, X_val, y_val):
         # Paramètres
-        batch_size = 32
+        batch_size = 16
         num_classes = 27
 
         df_train = pd.concat([X_train, y_train.astype(str)], axis=1)

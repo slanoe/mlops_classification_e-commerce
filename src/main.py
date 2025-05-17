@@ -37,7 +37,7 @@ vgg16 = keras.models.load_model("models/best_vgg16_model.h5")
 
 print("Training the concatenate model")
 model_concatenate = concatenate(tokenizer, lstm, vgg16)
-lstm_proba, vgg16_proba, new_y_train = model_concatenate.predict(X_train, y_train)
+lstm_proba, vgg16_proba, new_y_train = model_concatenate.predict(X_train, y_train, 30)
 best_weights = model_concatenate.optimize(lstm_proba, vgg16_proba, new_y_train)
 print("Finished training concatenate model")
 
