@@ -4,7 +4,6 @@ import logging
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 import shutil
-from check_structure import check_existing_folder
 
 
 @click.command()
