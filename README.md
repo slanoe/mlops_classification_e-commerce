@@ -49,20 +49,18 @@ Project Organization
 
 ## Python Version
 
-This project requires Python 3.12 or later.
+This project requires Python 3.10.
 
 --------
 
-Once you have downloaded the github repo, open the anaconda powershell on the root of the project and follow those instructions :
+> `sudo apt update && sudo apt install python3.10 python3.10-venv python3.10-dev && sudo apt install python3-virtualenv`      <- It will install Python 3.10 and virtualenv
 
-> `python3 -m venv .venv`      <- It will create a virtual environment named .venv
+> `virtualenv -p python3.10 .venv`      <- It will create a virtual environment named .venv
 
 > `source .venv/bin/activate`  <- It will activate the virtual environment (Linux/Mac)
 > `.venv\Scripts\activate`     <- It will activate the virtual environment (Windows)
 
 > `pip install -r requirements.txt`      <- It will install the required packages
-
-> `python -m nltk.downloader punkt`      <- It will download the punkt tokenizer for nltk
 
 > `python src/data/import_raw_data.py`   <- It will import the tabular data on data/raw/
 
