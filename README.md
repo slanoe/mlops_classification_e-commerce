@@ -73,3 +73,7 @@ This project requires Python 3.10.
 > 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
 python make_dataset.py "../../data/raw" "../../data/preprocessed"
+
+## Architecture diagram
+
+> `docker run -it --rm -p 8080:8080 -d -v ./docs/:/usr/local/structurizr structurizr/lite`      <- It will run the structurizr on http://localhost:8080/

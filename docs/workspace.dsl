@@ -1,112 +1,146 @@
-workspace {
-
+workspace "Rakuten Product Categorization System" {
     model {
-        user = person "Client Rakuten" {
-            description "Client final du site Rakuten"
+        vendeur = person "Vendeur" {
             tags "Utilisateur"
+            description "Ajoute des produits, valide ou modifie la catégorie proposée."
+        }
+        administrateur = person "Administrateur" {
+            tags "Utilisateur"
+            description "Supervise, corrige les catégories, accède à des fonctions avancées de monitoring."
         }
 
-        admin = person "Admin / MLOps" {
-            description "Administrateur et équipe Data/DevOps"
-            tags "Utilisateur"
-        }
-
-        rakutenSystem = softwareSystem "Système de classification Rakuten" {
-            description "Plateforme MLOps de classification automatique de produits via données textuelles et images."
-
-            webApp = container "Application Web" {
-                description "Interface utilisateur (Streamlit) pour recherche, recommandations, visualisation, monitoring"
-                technology "Streamlit"
+        rakutenSystem = softwareSystem "Système de catégorisation de produits Rakuten" {
+            interfaceUtilisateur = container "Interface utilisateur" "Application web pour l'interaction utilisateur (authentification, ajout/validation produit, visualisation, feedback)" "Streamlit" {
                 tags "WebApp"
+                composantAuthentification = component "Interface d'authentification" "Gère l'authentification des utilisateurs" {
+                    tags "Composant"
+                }
+                composantAjoutProduit = component "Interface d'ajout de produit" "Gère l'ajout de produits (texte + image)" {
+                    tags "Composant"
+                }
+                composantVisualisation = component "Interface de catégorisation" "Affiche la catégorie prédite, permet la validation ou correction, collecte le feedback utilisateur" {
+                    tags "Composant"
+                }
             }
-
-            api = container "API FastAPI" {
-                description "API REST orchestrant les traitements (prédiction, ajout, requêtage)"
-                technology "Python (FastAPI)"
+            apiBackend = container "API Backend" "API REST pour la gestion des utilisateurs, produits, logs et communication avec les autres services" "FastAPI" {
                 tags "API"
-
-                classifier = component "Contrôleur de classification" {
-                    description "Gère la logique de prédiction"
-                    technology "Python"
+                composantGestionRequetes = component "Composant de gestion des requêtes" "Gère les requêtes d'authentification, d'ajout/modification de produits, de prédiction de catégories" {
                     tags "Composant"
                 }
-
-                modelWrapper = component "Model Wrapper" {
-                    description "Appelle le modèle Keras pour effectuer la classification"
-                    technology "Keras"
+                composantGestionLogs = component "Composant de gestion des logs" "Centralise les logs applicatifs et les événements pour la traçabilité et l'audit" {
                     tags "Composant"
                 }
             }
-
-            mlModel = container "Modèle IA" {
-                description "Modèle de classification (Keras + BentoML) entraîné sur données multimodales"
-                technology "Keras + BentoML"
+            servicePrediction = container "Service de prédiction" "Service de prédiction déployé avec BentoML, utilisant TensorFlow/Keras" "BentoML, TensorFlow/Keras" {
                 tags "IA"
+                composantReceptionDonnees = component "Composant de réception des données" "Reçoit les données de produits (texte, image)" {
+                    tags "Composant"
+                }
+                composantPrediction = component "Composant de prédiction" "Prédit les catégories à partir des données multimodales" {
+                    tags "Composant"
+                }
+                composantRetourResultats = component "Composant de retour des résultats" "Retourne les catégories prédites et les scores de confiance" {
+                    tags "Composant"
+                }
             }
-
-            database = container "Base de Données PostgreSQL" {
-                description "Stocke les produits, les prédictions et les logs"
-                technology "PostgreSQL"
+            pipelineML = container "Pipeline ML et versioning" "Pipeline d'entraînement, validation, détection de dérive, versioning (MLflow, DVC, Airflow)" "MLflow, DVC, Airflow" {
+                tags "Pipeline"
+                composantCollectePredictions = component "Composant de collecte des prédictions" "Collecte les prédictions et corrections manuelles pour l'entraînement et la détection de dérive" {
+                    tags "Composant"
+                }
+                composantReentrainement = component "Composant de réentraînement" "Réentraîne les modèles à partir des nouvelles données" "Scikit-Learn, Keras" {
+                    tags "Composant"
+                }
+                composantGestionVersioning = component "Composant de gestion du versioning" "Versionne les modèles et les données d'entraînement (MLflow, DVC)" {
+                    tags "Composant"
+                }
+            }
+            monitoringAlerting = container "Monitoring & alerting" "Surveillance, détection de dérive, alerting (Evidently, Prometheus, Grafana)" "Evidently, Prometheus, Grafana" {
+                tags "Monitoring"
+                composantCollecteMetriques = component "Composant de collecte des métriques" "Collecte les métriques de performance et d'usage" {
+                    tags "Composant"
+                }
+                composantDetectionDerives = component "Composant de détection des dérives" "Détecte les dérives de données et de concept" {
+                    tags "Composant"
+                }
+                composantAlerting = component "Composant d'alerting" "Alerte en cas de dérive détectée ou d'incident" {
+                    tags "Composant"
+                }
+            }
+            baseDonnees = container "Base de données" "Stockage des produits, utilisateurs, logs, feedback, images (PostgreSQL, stockage objet)" "PostgreSQL, stockage objet" {
                 tags "BDD"
             }
-
-            storage = container "Stockage d'images" {
-                description "Contient les images des produits (Google Drive intégré au pipeline)"
-                technology "Google Drive"
+            stockageExterne = container "Stockage externe" "Stockage des modèles, datasets, backups (Google Drive, S3...)" "Google Drive" {
                 tags "Stockage"
             }
-
-            monitoring = container "Monitoring & Supervision" {
-                description "Composants de surveillance (Prometheus, Grafana, Evidently)"
-                technology "Prometheus, Grafana, Evidently"
-                tags "Monitoring"
-            }
-
-            pipeline = container "Pipeline MLOps" {
-                description "Orchestration via Airflow, ZenML pour ingestion, entraînement, déploiement"
-                technology "Airflow + ZenML"
-                tags "Pipeline"
-            }
-
-            // Relations de niveau conteneur
-            user -> webApp "Recherche, consulte, reçoit des recommandations"
-            admin -> webApp "Ajoute des produits, supervise, déclenche réentraînements"
-            admin -> pipeline "Planifie les entraînements"
-
-            webApp -> api "Appelle l'API"
-            api -> mlModel "Requête de prédiction"
-            api -> database "Lit / écrit des données"
-            api -> storage "Accède aux images"
-
-            mlModel -> monitoring "Envoie des métriques"
-            pipeline -> mlModel "Réentraîne le modèle"
-            pipeline -> database "Utilise les jeux de données"
-            pipeline -> monitoring "Surveille les performances"
-
-            // Relations entre composants internes
-            classifier -> modelWrapper "Appelle le modèle IA"
-            modelWrapper -> mlModel "Requête de prédiction"
         }
+
+        // Relations utilisateurs
+        vendeur -> interfaceUtilisateur "Ajoute un produit, valide ou modifie la catégorie, donne un feedback"
+        administrateur -> interfaceUtilisateur "Supervise, corrige les catégories, accède au monitoring"
+
+        // Flux principaux
+        interfaceUtilisateur -> apiBackend "HTTPS, JSON, REST API"
+        apiBackend -> servicePrediction "HTTPS, JSON, REST API"
+        apiBackend -> baseDonnees "PostgreSQL, SQL, stockage objet"
+        apiBackend -> monitoringAlerting "Envoie des métriques d'usage et feedback utilisateur"
+        servicePrediction -> pipelineML "HTTPS, HDF5/CSV, REST API"
+        pipelineML -> monitoringAlerting "HTTPS, JSON, REST API"
+        pipelineML -> stockageExterne "Synchronise modèles et datasets (Google Drive API)"
+        baseDonnees -> pipelineML "Fournit données pour l'entraînement et la détection de dérive"
+        pipelineML -> baseDonnees "Enregistre les corrections et feedbacks"
+        monitoringAlerting -> apiBackend "Alerte, notifications"
+        monitoringAlerting -> interfaceUtilisateur "Affiche alertes ou feedback qualité"
+        interfaceUtilisateur -> monitoringAlerting "Remonte feedback utilisateur"
+
+        // Flux internes
+        composantAuthentification -> composantAjoutProduit "Authentification"
+        composantAjoutProduit -> composantVisualisation "Ajout de produit"
+        composantGestionRequetes -> interfaceUtilisateur "Gestion des requêtes"
+        composantGestionRequetes -> servicePrediction "Gestion des requêtes"
+        composantGestionLogs -> baseDonnees "Stocke les logs"
+        composantReceptionDonnees -> composantPrediction "Réception des données"
+        composantPrediction -> composantRetourResultats "Prédiction des catégories"
+        composantCollectePredictions -> composantDetectionDerives "Collecte des prédictions"
+        composantDetectionDerives -> composantReentrainement "Détection de dérive"
+        composantCollecteMetriques -> composantDetectionDerives "Collecte des métriques"
+        composantDetectionDerives -> composantAlerting "Détection des dérives"
+        composantGestionVersioning -> stockageExterne "Synchronise modèles et datasets"
+
     }
 
     views {
-
         systemContext rakutenSystem {
             include *
-            autolayout lr
-            title "Contexte Système Rakuten"
         }
 
         container rakutenSystem {
             include *
-            autolayout lr
-            title "Vue Conteneurs - Système Rakuten"
         }
 
-        component api {
+        component interfaceUtilisateur {
             include *
-            autolayout lr
-            title "Vue Composants - API FastAPI"
+            autoLayout
+        }
+
+        component apiBackend {
+            include *
+            autoLayout
+        }
+
+        component servicePrediction {
+            include *
+            autoLayout
+        }
+
+        component pipelineML {
+            include *
+            autoLayout
+        }
+
+        component monitoringAlerting {
+            include *
+            autoLayout
         }
 
         styles {
@@ -135,8 +169,8 @@ workspace {
             }
 
             element "IA" {
-                shape "RoundedBox"
-                background "#d9ead3"
+                shape "Hexagon"
+                background "#C25704"
                 color "#000000"
             }
 

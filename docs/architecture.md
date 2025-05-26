@@ -11,409 +11,439 @@ header-includes:
 
 \newpage
 
-
-# 1. Introduction et objectifs
-
-## 1.1 Aperçu des spécifications
-
-Le projet Rakuten vise à automatiser la classification de produits à l’aide de données textuelles et visuelles. Le système cible les administrateurs et les clients du site Rakuten France. Il est basé sur une architecture MLOps complète et doit répondre à des contraintes de performance, de traçabilité, de supervision et d’évolution.
-
-## 1.2 Objectifs de qualité
-
-Les objectifs de qualité du projet sont définis selon les caractéristiques ISO 25010 :
-
-- **Efficacité** : temps de réponse API < 500 ms, inférence IA < 1s/image
-- **Fiabilité** : disponibilité > 99.5%, redondance et supervision continue
-- **Utilisabilité** : interface intuitive pour administrateurs via Streamlit
-- **Sécurité** : chiffrement, OAuth2, logs d’accès, RGPD
-- **Maintenabilité** : architecture modulaire, CI/CD, tests automatisés
-- **Adaptabilité** : ajustement du modèle selon le drift via Evidently
-
-L’approche MLOps est essentielle pour garantir la qualité, la reproductibilité et la scalabilité du modèle déployé. Elle permet de :
-- Assurer l’automatisation complète du pipeline de développement jusqu’au déploiement ;
-- Suivre les performances en production et détecter les dérives ;
-- Faciliter la collaboration entre les équipes Data, Dev et Ops ;
-- Intégrer les bonnes pratiques DevOps dans les workflows IA (tests, CI/CD, monitoring, etc.) ;
-- Maintenir un cycle de vie de modèle durable et traçable.
-
-## 1.3 Parties prenantes
-
-- Équipe data (modèle, ingestion, MLOps)
-- Équipe dev (UI/UX, API)
-- Architecte et DevOps (infrastructure, CI/CD)
-- Métiers (utilisateurs finaux : clients & admins Rakuten)
-
-# 2. Contraintes
-
-## 2.1 Contraintes techniques
-L'objectif est de mettre en oeuvre les technologies vues lors des sprints de formation :
-- Environnement :
-  - Git & GitHub : Gestion de version du code source et collaboration entre développeurs,
-  - FastAPI : Framework Python moderne pour créer des API,
-- Suivi d'expérience & versioning :
-  - DVC & DagsHub : Versionning des données, des modèles et pipelines ML, avec traçabilité sur Git (DVC) et interface graphique collaborative (DagsHub),
-  - MLflow : Suivi des expériences, des métriques de performance, enregistrement des modèles et visualisation de leur historique,
-- Orchestration & déploiement :
-  - Airflow : Outil d’orchestration de workflows pour automatiser les tâches répétitives (préprocessing, entraînement, sauvegardes, etc.),
-  - BentoML : Framework de packaging et de déploiement de modèles IA sous forme d’API REST prêtes pour la production,
-- Monitoring : 
-  - Prometheus & Grafana : Prometheus collecte les métriques système et applicatives, Grafana permet leur visualisation via des dashboards temps réel,
-  - Evidently : Surveillance des performances des modèles IA et détection automatique de dérive des données (data drift, concept drift),
-- Scaling & MLOPS plateform :
-  - Kubernetes : Orchestrateur de conteneurs pour le déploiement scalable, la répartition de charge et la tolérance aux pannes,
-  - ZenML : Framework pour structurer des pipelines MLOps modulaires, traçables et portables, compatible avec de nombreux outils comme MLflow, Airflow et Kubernetes.
-
-## 2.2 Contraintes organisationnelles
-L'implémentation est organisée sous forme de sprints :
-- Sprint 1 : Créer l’environnement d’exécution avec Docker
-- Sprint 2 : Développer le modèle, structurer les données et suivre les expériences avec MLflow, DVC, tracking, versioning
-- Sprint 3 : Automatiser le pipeline de bout en bout et rendre le modèle accessible via Airflow, déploiement API et BentoML
-- Sprint 4 : Mettre en place le monitoring (Prometheus, Grafana, Evidently)
-- Sprint 5 : Assurer la scalabilité avec ZenML et Kubernetes pour l’orchestration et la montée en charge
-
-## 2.3 Conventions
-
-- Langue de développement : anglais (code, variables, commentaires)
-- Respect du Software Craftsmanship : code propre, lisible, testé, principe KISS, YAGNI, DRY
-- Nommage camelCase (code) et kebab-case (fichiers)
-- Conventions MLOps standardisées : modularité, traçabilité, sécurité
-
-# 3. Contexte
-
-## 3.1 Contexte métier
-
-Le projet est une réponse aux besoins de Rakuten de fiabiliser la catégorisation de ses produits pour améliorer la recherche, la recommandation, la gestion du catalogue et le référencement. Le dataset contient 99k produits à classer automatiquement selon plus de 1000 catégories.
-
-## 3.2 Contexte technique
-
-Le projet utilise les données du challenge Rakuten (texte : 60 MB, images : 2.2 GB). L’objectif est de concevoir une architecture modulaire, conteneurisée, supervisée, avec modèle réentraînable.
-
-# 4. Cas d'utilisation (Use-cases)
-
-## 4.1 UC1 — Rechercher un produit
-- **Acteur** : Client  
-- **Préconditions** : Accès au site en ligne  
-- **Scénario principal** :
-  1. Le client saisit un mot-clé dans la barre de recherche.  
-  2. Le système interroge la base et retourne les produits correspondants.  
-  3. Le client consulte un produit.  
-- **Flux alternatifs** :  
-  - A1 Aucun résultat → Suggestions ou message d’erreur.  
+# Système de catégorisation de produits Rakuten
 
 ---
 
-## 4.2 UC2 — Recevoir des recommandations
-- **Acteur** : Client  
-- **Préconditions** : Historique de navigation existant  
-- **Scénario principal** :
-  1. Le client consulte un produit.  
-  2. Le système affiche des produits similaires.  
-- **Flux alternatifs** :  
-  - A1 Pas de recommandations → Afficher produits populaires.  
+## 1. Contexte
+
+Ce document présente l'architecture d'un système de catégorisation automatique des produits, destiné à la plateforme Rakuten. L'objectif principal est d'améliorer la qualité de la recherche, de la recommandation, de la gestion du catalogue et du référencement en automatisant la classification des produits à partir de données textuelles et d'images fournies par les vendeurs.
+
+Le projet répond aux besoins de fiabilisation de la catégorisation des produits de Rakuten pour optimiser la recherche, la recommandation, la gestion du catalogue et le référencement. Le jeu de données comprend environ 99 000 produits à classer dans plus de 1 000 catégories.
+
+**Objectifs spécifiques** :
+
+* Améliorer la précision de la catégorisation des produits.
+* Réduire le temps de traitement des nouveaux produits.
+* Augmenter la satisfaction des vendeurs et des clients.
+
+**Bénéfices attendus** :
+
+* Meilleure expérience utilisateur.
+* Augmentation des ventes grâce à une meilleure recommandation.
+* Réduction des coûts opérationnels.
+
+**Jeu de données** :
+
+* Données textuelles : 60 MB de fichiers CSV contenant la description des produits
+* Données images : 2,2 GB d’images des produits au format JPEG
+
+L’architecture cible doit être modulaire, conteneurisée, supervisée et permettre le réentraînement automatisé des modèles.
 
 ---
 
-## 4.3 UC3 — Ajouter un produit au catalogue
-- **Acteur** : Admin / MLOps  
-- **Préconditions** : Connexion à l’interface d’admin  
-- **Scénario principal** :
-  1. L’admin saisit les informations produit + image.  
-  2. Le système stocke le produit et déclenche la classification.  
-  3. Le code produit prédit est affiché.  
-- **Flux alternatifs** :  
-  - A1 Image absente → Message d’erreur  
-  - A2 Score de confiance faible → Demande de validation manuelle  
+## 2. Expression du besoin
+
+### 2.1 Exigences fonctionnelles
+
+* Ajout d’un produit (description et image) via une interface Web
+* Classification automatisée du produit selon les catégories du site Rakuten
+* Administration du système pour contrôler les différentes métriques du modèle de classification
+
+### 2.2 Exigences non fonctionnelles
+
+* Détection et réentraînement en cas de dérive du modèle de catégorisation
+* Scalabilité pour volumes croissants
+* Monitoring et alerting en production
+* Versioning et traçabilité des modèles IA
 
 ---
 
-## 4.4 UC4 — Classifier automatiquement un produit
-- **Acteur** : Système  
-- **Préconditions** : Produit complet avec image + texte  
-- **Scénario principal** :
-  1. Le modèle IA reçoit les données.  
-  2. Une classe parmi 1500 est prédite.  
-  3. Le résultat est stocké et associé au produit.  
-- **Flux alternatifs** :  
-  - A1 Prédiction impossible → File d’attente pour traitement ultérieur  
+## 3. Architecture fonctionnelle
+
+### 3.1 Écosystème
+
+Ce paragraphe décrit l'écosystème dans lequel s'inscrit le système. Le diagramme de contexte C4 est utilisé pour illustrer les interactions entre les différents systèmes et acteurs.
+
+![](medias/structurizr-1-SystemContext-001.png)
+
+### 3.2 Acteurs
+
+* **Vendeur** : ajoute un produit (image, titre, description), valide ou modifie la catégorie proposée, donne un feedback sur la qualité de la prédiction.
+* **Administrateur** : supervise, corrige manuellement les catégories, accède aux fonctions avancées de monitoring et d’audit.
+
+### 3.3 Cas d’usage
+
+#### 3.3.1 Authentification
+
+En tant qu'utilisateur, je veux pouvoir me connecter au système avec mes identifiants, afin d'accéder aux fonctionnalités du système.
+
+1. L'utilisateur saisit ses identifiants (email, mot de passe).
+2. Le système vérifie les identifiants.
+3. Si les identifiants sont valides, l'utilisateur est authentifié et accède au système.
+4. Si les identifiants sont invalides, un message d'erreur est affiché.
+
+**Flux alternatifs** :
+
+* A1 : Identifiants invalides → message d’erreur.
+* A2 : Compte bloqué → message d’erreur.
+
+#### 3.3.2 Ajout de produit par le Vendeur
+
+En tant que vendeur, je veux ajouter un produit avec une image, un titre et une description, afin que le système puisse le classer automatiquement dans la bonne catégorie.
+
+1. Le vendeur saisit les informations produit et téléverse une image.
+2. Le produit est enregistré en base.
+3. La classification IA est déclenchée.
+4. La catégorie prédite et son score de confiance sont affichés.
+
+**Flux alternatifs** :
+
+* A1 : Image absente → message d’erreur.
+* A2 : Score faible → validation manuelle requise.
+* A3 : Sélection manuelle d’une autre catégorie.
+
+#### 3.3.3 Modification de catégorie par l’Administrateur
+
+En tant qu'administrateur, je veux pouvoir rechercher et modifier la catégorie d'un produit, afin de corriger les erreurs de classification.
+
+1. L’administrateur accède à l’interface d’administration.
+2. Il recherche et sélectionne un produit.
+3. Il modifie la catégorie.
+4. La modification est enregistrée.
+
+**Flux alternatifs** :
+
+* A1 : Produit introuvable → message d’erreur.
+* A2 : Catégorie non valide → message d’erreur avec liste autorisée.
+
+#### 3.3.4 Réentraînement du modèle IA
+
+De manière automatisée, je veux que le système détecte automatiquement les dérives de données et de concept, afin de déclencher le réentraînement des modèles IA.
+
+1. Collecte des prédictions et corrections manuelles.
+2. Analyse pour détection de dérive (data & concept drift).
+3. Si dérive détectée, déclenchement du pipeline de réentraînement.
+4. Validation et déploiement du nouveau modèle.
+
+**Flux alternatifs** :
+
+* A1 : Échec de l’entraînement → notification aux équipes.
+* A2 : Nouvelle version moins performante → maintien de la version précédente.
+
+#### 3.3.5 Gestion des logs et traçabilité
+
+En tant qu’administrateur, je veux pouvoir accéder à l’historique des actions, des prédictions et des corrections, afin d’assurer la traçabilité et l’audit du système.
+
+1. Toutes les actions utilisateurs et systèmes sont loguées.
+2. Les logs sont stockés en base et/ou dans un stockage dédié.
+3. Les administrateurs peuvent consulter les logs pour audit ou analyse.
+
+### 3.4 Blocs fonctionnels
+
+#### 3.4.1 Interface utilisateur
+
+* **Description** : Interface web permettant aux utilisateurs d'interagir avec le système.
+* **Fonctionnalités** :
+  * Authentification des utilisateurs.
+  * Ajout et modification des produits.
+  * Visualisation des catégories prédites.
+
+#### 3.4.2 API Backend
+
+* **Description** : API backend pour gérer les requêtes et les réponses entre l'interface utilisateur et les services de prédiction.
+* **Fonctionnalités** :
+  * Gestion des requêtes d'authentification.
+  * Gestion des requêtes d'ajout et de modification de produits.
+  * Gestion des requêtes de prédiction de catégories.
+  * Gestion centralisée des logs et des événements (audit, traçabilité).
+
+#### 3.4.3 Service de prédiction
+
+* **Description** : Service de prédiction pour classer les produits dans les catégories appropriées.
+* **Fonctionnalités** :
+  * Réception des données de produits.
+  * Prédiction des catégories.
+  * Retour des catégories prédites et des scores de confiance.
+
+#### 3.4.4 Pipeline ML et versioning
+
+* **Description** : Pipeline pour l'entraînement, la validation et le déploiement des modèles de machine learning.
+* **Fonctionnalités** :
+  * Collecte des prédictions et corrections manuelles.
+  * Détection de dérive de données et de concept.
+  * Réentraînement des modèles.
+  * Stocke et versionne les données d'entrainement et les modèles.
+
+#### 3.4.5 Monitoring & alerting
+
+* **Description** : Système de monitoring et d'alerting pour surveiller les performances et la qualité des modèles.
+* **Fonctionnalités** :
+  * Collecte des métriques de performance.
+  * Détection des dérives de données et de concept.
+  * Alerting en cas de dérive détectée.
+
+#### 3.4.6 Base de données
+
+* **Description** : Base de données pour persister les données des produits.
+* **Fonctionnalités** :
+  * Stockage des données des produits.
+  * Récupération des données des produits.
+
+### 3.6 Description des données
+
+#### 3.6.1 Données textuelles
+
+* **Flux de données** : Input (titre, description), Output (catégorie prédite, score de confiance).
+* **Nature** : Informations descriptives des produits.
+* **Origine** : Fournies par les vendeurs.
+* **Sensibilité** : Données sensibles.
+* **Persistance** : Les données textuelles doivent être persistées pour permettre la classification, l'entraînement des modèles et la consultation depuis l'interface.
+
+#### 3.6.2 Données images
+
+* **Flux de données** : Input (images), Output (catégorie prédite, score de confiance).
+* **Nature** : Images des produits.
+* **Origine** : Fournies par les vendeurs.
+* **Sensibilité** : Données sensibles.
+* **Persistance** : Les données images doivent être persistées pour permettre la classification, l'entraînement des modèles et la consultation depuis l'interface.
+* Les images sont stockées dans un stockage objet ou externe, référencées en base.
+
+#### 3.6.3 Logs et feedback utilisateur
+
+* **Flux de données** : Input (actions, feedback), Output (audit, monitoring, alerting).
+* **Nature** : Logs applicatifs, feedback utilisateur.
+* **Origine** : Générés par l’API Backend et l’interface utilisateur.
+* **Sensibilité** : Données sensibles (audit, conformité).
+* **Persistance** : Stockés en base et/ou dans un stockage dédié.
 
 ---
 
-## 4.5 UC5 — Déployer un modèle
-- **Acteur** : Admin / MLOps  
-- **Préconditions** : Modèle validé via MLflow  
-- **Scénario principal** :
-  1. L’équipe crée un bento avec BentoML.  
-  2. L’image est envoyée sur le registre.  
-  3. Kubernetes déploie l’API sur le cluster.  
-- **Flux alternatifs** :  
-  - A1 Échec → Rollback automatique via CI/CD  
+## 4. Architecture logicielle
+
+### 4.1 Diagramme de conteneurs
+
+Le diagramme d'architecture logicielle du système montre les différentes unités de déploiement (applications, API, base de données, versionning des données et modèles ML) et leurs interactions.
+
+![](medias/structurizr-1-Container-001.png)
+
+### 4.2 Flux de données entre les conteneurs
+
+Les flux de données entre les différents conteneurs sont décrits ci-dessous :
+
+* **Interface utilisateur ↔ API Backend** :
+
+  * **Protocole** : HTTPS
+  * **Format** : JSON
+  * **Technologie** : REST API
+
+* **API Backend ↔ Service de prédiction** :
+
+  * **Protocole** : HTTPS
+  * **Format** : JSON
+  * **Technologie** : REST API
+
+* **API Backend ↔ Base de données** :
+
+  * **Protocole** : PostgreSQL
+  * **Format** : SQL
+  * **Technologie** : PostgreSQL
+
+* **Service de prédiction ↔ Pipeline ML et versioning** :
+
+  * **Protocole** : HTTPS
+  * **Format** : HDF5 pour les modèles, CSV pour les données d'entraînement
+  * **Technologie** : REST API
+
+* **Pipeline ML et versioning ↔ Monitoring & alerting** :
+
+  * **Protocole** : HTTPS
+  * **Format** : JSON
+  * **Technologie** : REST API
+
+* **Pipeline ML et versioning ↔ Google Drive** :
+
+  * **Protocole** : HTTPS
+  * **Format** : HDF5 pour les modèles, CSV pour les données d'entraînement
+  * **Technologie** : Google Drive API
+
+* **API Backend ↔ Monitoring & alerting** :
+
+  * **Protocole** : HTTPS
+  * **Format** : JSON
+  * **Technologie** : REST API
+  * **Usage** : Transmission des métriques d’usage, logs.
+
+* **API Backend ↔ Stockage externe** :
+
+  * **Protocole** : HTTPS
+  * **Format** : JSON, fichiers (HDF5, CSV, images)
+  * **Technologie** : Google Drive API
+  * **Usage** : Sauvegarde/restauration de modèles, images.
+
+### 4.3 Interface utilisateur
+
+#### 4.3.1 Diagramme de composants
+
+Le diagramme de composants du conteneur d'interface utilisateur montre les différents composants et leurs interactions. Les composants principaux incluent :
+
+* **Composant d'authentification** : Gère l'authentification des utilisateurs.
+* **Composant d'ajout de produit** : Gère l'ajout de produits.
+* **Composant de visualisation** : Gère la visualisation des catégories prédites.
+
+#### 4.3.2 Choix technologiques
+
+* **Solution** : Streamlit
+* **Justification** : Streamlit est une bibliothèque Python open-source qui permet de créer des applications web interactives rapidement et facilement. Elle est idéale pour les interfaces utilisateur nécessitant une interaction avec des modèles de machine learning.
+
+### 4.4 API Backend
+
+#### 4.4.1 Diagramme de composants
+
+Le diagramme de composants du conteneur API Backend montre les différents composants et leurs interactions. Les composants principaux incluent :
+
+* **Composant de gestion des requêtes** : Gère les requêtes d'authentification, d'ajout et de modification de produits, et de prédiction de catégories.
+
+#### 4.4.2 Choix technologiques
+
+* **Solution** : FastAPI
+* **Justification** : FastAPI est un framework moderne, rapide (hautes performances) pour construire des API avec Python 3.6+ basé sur les annotations de type standard Python. Il est idéal pour créer des API robustes et performantes.
+
+### 4.5 Service de prédiction
+
+#### 4.5.1 Diagramme de composants
+
+Le diagramme de composants du conteneur de service de prédiction montre les différents composants et leurs interactions. Les composants principaux incluent :
+
+* **Composant de réception des données** : Reçoit les données de produits.
+* **Composant de prédiction** : Prédit les catégories.
+* **Composant de retour des résultats** : Retourne les catégories prédites et les scores de confiance.
+
+#### 4.5.2 Choix technologiques
+
+* **Solution** : BentoML, TensorFlow/Keras
+* **Justification** :
+  * **BentoML** : Plateforme open-source pour le déploiement et la gestion de modèles de machine learning. Elle permet de packager les modèles et de les déployer facilement, ce qui est essentiel pour un système de prédiction.
+  * **TensorFlow/Keras** : Bibliothèques open-source pour la création et l'entraînement de modèles de machine learning. Elles sont idéales pour la création de modèles de prédiction.
+
+### 4.6 Pipeline ML et versioning
+
+#### 4.6.1 Diagramme de composants
+
+Le diagramme de composants du conteneur de pipeline ML et versioning montre les différents composants et leurs interactions. Les composants principaux incluent :
+
+* **Composant de collecte des prédictions** : Collecte les prédictions et corrections manuelles.
+* **Composant de détection de dérive** : Détecte les dérives de données et de concept.
+* **Composant de réentraînement** : Réentraîne les modèles.
+
+#### 4.6.2 Choix technologiques
+
+* **Solution** : MLflow, DVC, Airflow
+* **Justification** :
+  * **MLflow** : Plateforme open-source pour la gestion du cycle de vie des projets de machine learning, y compris l'expérimentation, la reproductibilité et le déploiement.
+  * **DVC** : Outil de versioning de données et de gestion de pipelines de machine learning, intégré avec Git.
+  * **Airflow** : Plateforme pour programmer et surveiller des workflows, idéale pour l'orchestration des pipelines de machine learning.
+
+### 4.7 Monitoring & alerting
+
+#### 4.7.1 Diagramme de composants
+
+Le diagramme de composants du conteneur de monitoring & alerting montre les différents composants et leurs interactions. Les composants principaux incluent :
+
+* **Composant de collecte des métriques** : Collecte les métriques de performance.
+* **Composant de détection des dérives** : Détecte les dérives de données et de concept.
+* **Composant d'alerting** : Alerte en cas de dérive détectée.
+
+#### 4.7.2 Choix technologiques
+
+* **Solution** : Evidently, Prometheus, Grafana
+* **Justification** :
+  * **Evidently** : Outil pour le monitoring et l'analyse de la qualité des données et des modèles de machine learning.
+  * **Prometheus** : Système de monitoring et d'alerting open-source, idéal pour la collecte de métriques.
+  * **Grafana** : Plateforme de visualisation et d'analyse de données, souvent utilisée avec Prometheus pour créer des tableaux de bord interactifs.
+
+### 4.8 Base de données Produits
+
+#### 4.8.1 Modèle de données
+
+* **Produit** : id, titre, description, image_url, catégorie_prédite, score_confiance, catégorie_validée, feedback, date_ajout, date_modification
+* **Utilisateur** : id, email, mot_de_passe_hash, rôle, date_creation, date_dernière_connexion
+* **Logs** : id, utilisateur_id, action, date, détails
+* **Modèle** : id, version, date_entrainement, score, chemin_stockage
+
+#### 4.8.2 Choix technologiques
+
+* **Solution** : PostgreSQL
+* **Justification** : PostgreSQL est un système de gestion de base de données relationnelle open-source, idéal pour persister les données des produits qui sont ajoutés et affichés dans Streamlit.
 
 ---
 
-## 4.6 UC6 — Monitorer le modèle
-- **Acteur** : Admin / MLOps  
-- **Préconditions** : API de prédiction active  
-- **Scénario principal** :
-  1. Prometheus collecte les métriques.  
-  2. Grafana les affiche.  
-  3. Evidently détecte les dérives.  
-  4. L’équipe reçoit une alerte.  
-- **Flux alternatifs** :  
-  - A1 Inactivité → Redémarrage automatique ou alerte  
+## 5. Architecture technique
+
+### 5.1 Infrastructure
+
+* **Configuration matérielle** :
+
+  * **Système d'exploitation** : Windows 11
+  * **Caractéristiques de disponibilité et de résilience** : Utilisation de Docker et Kubernetes pour la conteneurisation et l'orchestration des conteneurs.
+  * **Sauvegarde et récupération** : Sauvegardes régulières pour assurer la récupération des données en cas de défaillance.
+
+* **Stockage externe** : Google Drive ou S3 pour les modèles, datasets, images volumineuses.
+
+### 5.2 Sécurité et Sauvegarde
+
+* Les conteneurs Docker sont sécurisés avec des politiques de sécurité.
+* Des sauvegardes régulières sont effectuées pour assurer la récupération des données.
+* Gestion des droits d’accès par rôle (vendeur, administrateur).
+* Chiffrement des données sensibles (mots de passe, logs).
+* Audit et traçabilité via la gestion centralisée des logs.
 
 ---
 
-## 4.7 UC7 — Réentraîner un modèle
-- **Acteur** : Admin / MLOps  
-- **Préconditions** : Nouvelles données, dérive détectée  
-- **Scénario principal** :
-  1. ZenML ou Airflow déclenche la pipeline.  
-  2. Un nouveau modèle est entraîné et validé.  
-  3. Il est enregistré avec MLflow et déployé.  
-- **Flux alternatifs** :  
-  - A1 Échec d’un job → Reprise partielle ou notification d’erreur  
+## 6. Architecture opérationnelle
 
-# 5. Architecture fonctionnelle / logique
+### 6.1 Monitoring et Alerting
 
-Cette vue décrit l’aspect métier de l’architecture. Elle est structurée selon les quatre axes fondamentaux suivants :
+* **Prometheus** :
 
-## 5.1 Utilisateurs
+  * **Collecte des métriques** : Collecte des métriques de performance des conteneurs et des applications.
+  * **Alertes** : Configuration d'alertes pour les métriques critiques.
 
-### 5.1.1 Admin MLOps Rakuten
-Gère l’ensemble du cycle de vie des données et du modèle :
-- Téléversement des produits dans le catalogue
-- Supervision du modèle
-- Réentraînement
-- Déploiement et maintenance
+* **Grafana** :
 
-### 5.1.2 Clients Rakuten
-Naviguent sur le site pour rechercher et consulter les produits du catalogue
-Ils bénéficient indirectement du système de classification automatique pour la recherche et les recommandations.
+  * **Tableaux de bord** : Création de tableaux de bord pour visualiser les métriques en temps réel.
+  * **Alertes** : Intégration avec Prometheus pour les alertes.
 
+* **Evidently** :
 
-## 5.2 Données utilisées / persistées
+  * **Détection de dérive** : Détection des dérives de données et de concept.
+  * **Alertes** : Alertes en cas de dérive détectée.
 
-- **Données textuelles et structurées** :
-    - `X_train` : 84 916 lignes, colonnes : `id`, `designation`, `description`, `productid`, `imageid`
-    - `X_test` : 13 812 lignes, même structure
-    - `y_train` : 84 016 labels associés (`id`, `prdtypecode`)
-- **Données images** :
-    - Environ 2,2 Go d’images JPEG liées aux produits, référencées par `imageid`
+### 6.2 Maintenance et Mise à jour
 
-## 5.3 Traitements réalisés / services métier
+* **Mises à jour des modèles IA** :
 
-- Téléversement multimodal (texte + image)
-- Enrichissement automatique via modèle IA
-- Recherche texte/catégorie
-- Accès et consultation produit via front Streamlit
+  * **Fréquence** : Mises à jour mensuelles.
+  * **Tests de régression** : Tests de régression pour assurer la qualité des nouvelles versions des modèles.
 
-## 5.4 Interfaces avec d'autres applications
+* **Procédures de maintenance** :
 
-Aucune interface avec d'autres applications n’est prévue dans ce projet. Le système est autonome.
+  * **Documentation** : Procédures de maintenance documentées.
+  * **Suivi** : Suivi des procédures de maintenance.
 
-# 6. Architecture applicative / logicielle
+---
 
-Cette vue est structurée par application (unité de déploiement).
+## 7. Annexes
 
-## 6.1 Application Web (UI)
+### Glossaire
 
-| Framework | Simplicité | Déploiement | Intégration IA | Accessibilité | Note globale |
-| --- | --- | --- | --- | --- | --- |
-| Streamlit | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| Angular | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| React | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| Dash | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
+* **prdtypecode** : Code de type de produit
+* **imageid** : Identifiant unique de l'image
 
-Justification : Streamlit permet de créer rapidement une interface performante et adaptée à une application de démonstration IA.
+### Liens utiles
 
-## 6.2 API Backend
-
-| Framework | Performance | Async Support | Documentation Auto | Courbe d’apprentissage | Note globale |
-| --- | --- | --- | --- | --- | --- |
-| FastAPI | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
-| Flask | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| Django REST | ⭐⭐ | ⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ |
-
-Choix : FastAPI pour sa rapidité, sa documentation automatique Swagger et son support de l’asynchrone.
-
-## 6.3 Service IA
-
-| Framework | Courbe d'apprentissage | Compatibilité | Communauté | Performance | Note globale |
-| --- | --- | --- | --- | --- | --- |
-| Keras | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| PyTorch | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| Sklearn | ⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
-
-Choix : Keras pour la simplicité et son intégration avec TensorFlow. Idéal pour projets à livrer rapidement.
-
-## 6.4 Base de données
-
-| BDD | Performance | SQL Support | ORM Compatibility | Scalabilité | Note globale |
-| --- | --- | --- | --- | --- | --- |
-| PostgreSQL | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| MySQL | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| SQLite | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐ | ⭐⭐ |
-
-Choix : PostgreSQL pour sa robustesse, son support d'extensions et sa compatibilité ORM avancée.
-
-## 6.5 Stockage objets
-
-| Outil | Simplicité | Coût | Partage | API supportée | Note globale |
-| --- | --- | --- | --- | --- | --- |
-| Google Drive | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ |
-| MinIO | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| Amazon S3 | ⭐⭐ | ⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-
-Choix : Google Drive pour la gratuité, la simplicité d'accès et la collaboration directe.
-
-## 6.6 Suivi d’expériences
-
-| Outil | Visualisation | Intégration | Versioning | Documentation | Note globale |
-| --- | --- | --- | --- | --- | --- |
-| MLflow + DVC | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| W&B | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-
-Choix : MLflow + DVC pour leur nature open-source et leur intégration avec Git/DagsHub.
-
-## 6.7 CI/CD
-
-| Outil | Simplicité | Intégration GitHub | Documentation | Coût | Note globale |
-| --- | --- | --- | --- | --- | --- |
-| GitHub Actions | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| GitLab CI | ⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| Jenkins | ⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
-
-Choix : GitHub Actions pour l'intégration native GitHub, les templates publics et la rapidité d'exécution.
-
-# 7. Architecture technique
-
-## 7.1 Infrastructure
-
-- Kubernetes (EKS AWS)
-- Noeuds API/UI : 4 vCPU / 8 Go RAM
-- Noeuds IA : 1 GPU / 16 Go RAM
-- Services managés : PostgreSQL RDS
-- Stockage objets : Google Drive
-
-## 7.2 Réseau et interconnexion
-
-- Débit 1 Gbps
-- Ingress Nginx, HTTPS, pare-feu namespace
-
-## 7.3 Containerisation
-
-| Outil | Sécurité | Intégration CI | Compatibilité K8s | Licence | Note globale |
-| --- | --- | --- | --- | --- | --- |
-| Podman | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | Open | ⭐⭐⭐⭐ |
-| Docker | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Freemium | ⭐⭐⭐⭐ |
-
-Choix : Podman pour sa nature rootless, sa compatibilité OCI, et sa meilleure sécurité par défaut.
-
-## 7.4 Dimensionnement
-
-- 500 requêtes API/min
-- 1000 images/jour < 24h de traitement
-- Utilisation cloud-first et scalable
-
-# 8. Architecture opérationnelle
-
-## 8.1 CI/CD
-
-- GitHub Actions (build, test via `pytest`, deployment)
-- ArgoCD ou kubectl manuel (GitOps simplifié)
-
-## 8.2 Monitoring
-
-- Prometheus : métriques API/IA
-- Grafana : dashboards
-- Evidently : dérive modèle et données
-
-## 8.3 Sauvegarde
-
-- Google Drive : snapshot des entrées + résultats IA
-- PostgreSQL : dump quotidien (pg_dump via Airflow)
-
-## 8.4 Maintenance
-
-- Airflow planifie réentraînement
-- Alertes seuils Prometheus → Slack/email
-
-# 9. Vue des décisions
-
-| ID | Sujet | Décision | Justification |
-| --- | --- | --- | --- |
-| D1 | UI | Streamlit | rapide, intégrable, peu de code |
-| D2 | API | FastAPI | async, rapide, adapté aux ML APIs |
-| D3 | Stockage objet | Google Drive | simplicité + gratuité + partage |
-| D4 | Tracking | MLflow + DVC | open-source, intégré à DagsHub |
-| D5 | CI/CD | GitHub Actions | YAML simple, intégré à GitHub |
-| D6 | Containerisation | Podman | rootless, sécurisé, moderne |
-
-# 10. Qualité
-
-- **Performance** : inférence < 1s/image, API < 500 ms
-- **Sécurité** : OAuth2 + firewall namespace + audit logs
-- **Fiabilité** : testée via CI, tolérance via K8s
-- **Scalabilité** : pods scalables, cloud storage
-- **Utilisabilité** : interface Streamlit simple et ergonomique
-
-# 11. Risques & atténuation
-
-| Risque | Impact | Proba | Mitigation |
-| --- | --- | --- | --- |
-| Drift IA | Élevé | Moyen | retrain auto + Evidently |
-| Latence Drive | Moyen | Faible | bufferisation Airflow, cache local |
-| Charge GPU | Élevé | Moyen | autoscaling + priorisation |
-| API failure | Élevé | Moyen | CI tests + fallback modes |
-
-# 12. Conclusion et évolutions possibles
-
-## 12.1 Résumé
-
-Le projet fournit une architecture MLOps complète pour classifier automatiquement des produits e-commerce selon des données multimodales (texte + image), avec déploiement, supervision et scalabilité.
-
-## 12.2 Ouvertures / axes d’amélioration
-
-- Utilisation de GPU spot instances pour optimisation coûts.
-- Déploiement multi-région pour haute disponibilité.
-- Enrichissement par moteur de recherche sémantique (ex. : vecteurs Faiss)
-- Version entreprise de Google Drive pour quota élevé.
-- Mise en œuvre du framework ZenML pour abstraction des pipelines.
-
-# 13. Glossaire
-
-- **CI/CD** : Continuous Integration / Continuous Delivery
-- **API** : Application Programming Interface
-- **IA** : Intelligence Artificielle
-- **MLOps** : Pratiques DevOps appliquées aux projets IA
-- **Docker/Podman** : Conteneurs d’exécution isolés
-- **GPU** : Processeur graphique, utilisé pour l'entraînement IA
-
-# 14. Annexes
-
-## 14.1 Diagramme C4 (Structurizr)
-
-*En annexe figure un diagramme C4 décrivant les éléments principaux de l’architecture logique, technique et applicative selon les 4 niveaux : Context, Container, Component, Code.*
-
-## 14.2 Critères d’évaluation
-
-1. Proposition de projet claire
-2. Documentation technique détaillée (slides et README)
-3. Nettoyage des données complet
-4. Versionnage des données implémenté
-5. Sélection de modèle appropriée
-6. Feature engineering pertinent
-7. Validation du modèle correcte
-8. Résultats reproductibles
-9. Utilisation du contrôle de version de code
-10. Pipelines CI/CD fonctionnelles
-11. Infrastructure scalable
-12. Outils de surveillance en place
-13. Mesures de détection des dérives et biais
-14. Mesures de confidentialité des données
-15. Stratégie de déploiement claire
-16. Plan de maintenance défini
-17. Collaboration d'équipe efficace
-18. Communication claire
-19. Suivi d'expérience d'entraînement
-20. Sécurisation de l'architecture (API)
+* [GitHub](https://github.com/slanoe/mlops_classification_e-commerce)
+* [DagsHub](https://dagshub.com/stevenlanoe/mlops_classification_e-commerce)
+* [DVC](https://dvc.org/)
+* [MLflow](https://mlflow.org/)
+* [Grafana](https://grafana.com/)
