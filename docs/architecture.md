@@ -227,154 +227,32 @@ Le diagramme d'architecture logicielle du système montre les différentes unit�
 
 ![](medias/structurizr-1-Container-001.png)
 
-### 4.2 Flux de données entre les conteneurs
+### 4.2 Interface utilisateur
 
-Les flux de données entre les différents conteneurs sont décrits ci-dessous :
+* **Streamlit** :  Bibliothèque Python open-source qui permet de créer des applications web interactives rapidement et facilement. Elle est idéale pour les interfaces utilisateur nécessitant une interaction avec des modèles de machine learning.
 
-* **Interface utilisateur ↔ API Backend** :
+### 4.3 API Backend
 
-  * **Protocole** : HTTPS
-  * **Format** : JSON
-  * **Technologie** : REST API
+* **FastAPI** :  Framework moderne, rapide (hautes performances) pour construire des API avec Python 3.6+ basé sur les annotations de type standard Python. Il est idéal pour créer des API robustes et performantes.
 
-* **API Backend ↔ Service de prédiction** :
+### 4.4 Base de données application
 
-  * **Protocole** : HTTPS
-  * **Format** : JSON
-  * **Technologie** : REST API
+* **PostgreSQL** :  Système de gestion de base de données relationnelle open-source, idéal pour persister les données des produits qui sont ajoutés et affichés dans Streamlit.
 
-* **API Backend ↔ Base de données** :
+### 4.5 Modèle ML de catégorisation
 
-  * **Protocole** : PostgreSQL
-  * **Format** : SQL
-  * **Technologie** : PostgreSQL
+* **TensorFlow/Keras** : Bibliothèques open-source pour la création et l'entraînement de modèles de machine learning. Elles sont idéales pour la création de modèles de prédiction.
+* **BentoML** : Plateforme open-source pour le déploiement et la gestion de modèles de machine learning. Elle permet de packager les modèles et de les déployer facilement, ce qui est essentiel pour un système de prédiction.
 
-* **Service de prédiction ↔ Pipeline ML et versioning** :
+### 4.6 ML Workflow
 
-  * **Protocole** : HTTPS
-  * **Format** : HDF5 pour les modèles, CSV pour les données d'entraînement
-  * **Technologie** : REST API
+* **MLflow** : Plateforme open-source pour la gestion du cycle de vie des projets de machine learning, y compris l'expérimentation, la reproductibilité et le déploiement.
+* **DVC** : Outil de versioning de données et de gestion de pipelines de machine learning, intégré avec Git et DagsHub.
+* **Airflow** : Plateforme pour programmer et surveiller des workflows, idéale pour l'orchestration des pipelines de machine learning.
 
-* **Pipeline ML et versioning ↔ Monitoring & alerting** :
+### 4.7 Base de données ML
 
-  * **Protocole** : HTTPS
-  * **Format** : JSON
-  * **Technologie** : REST API
-
-* **Pipeline ML et versioning ↔ Google Drive** :
-
-  * **Protocole** : HTTPS
-  * **Format** : HDF5 pour les modèles, CSV pour les données d'entraînement
-  * **Technologie** : Google Drive API
-
-* **API Backend ↔ Monitoring & alerting** :
-
-  * **Protocole** : HTTPS
-  * **Format** : JSON
-  * **Technologie** : REST API
-  * **Usage** : Transmission des métriques d’usage, logs.
-
-* **API Backend ↔ Stockage externe** :
-
-  * **Protocole** : HTTPS
-  * **Format** : JSON, fichiers (HDF5, CSV, images)
-  * **Technologie** : Google Drive API
-  * **Usage** : Sauvegarde/restauration de modèles, images.
-
-### 4.3 Interface utilisateur
-
-#### 4.3.1 Diagramme de composants
-
-Le diagramme de composants du conteneur d'interface utilisateur montre les différents composants et leurs interactions. Les composants principaux incluent :
-
-* **Composant d'authentification** : Gère l'authentification des utilisateurs.
-* **Composant d'ajout de produit** : Gère l'ajout de produits.
-* **Composant de visualisation** : Gère la visualisation des catégories prédites.
-
-#### 4.3.2 Choix technologiques
-
-* **Solution** : Streamlit
-* **Justification** : Streamlit est une bibliothèque Python open-source qui permet de créer des applications web interactives rapidement et facilement. Elle est idéale pour les interfaces utilisateur nécessitant une interaction avec des modèles de machine learning.
-
-### 4.4 API Backend
-
-#### 4.4.1 Diagramme de composants
-
-Le diagramme de composants du conteneur API Backend montre les différents composants et leurs interactions. Les composants principaux incluent :
-
-* **Composant de gestion des requêtes** : Gère les requêtes d'authentification, d'ajout et de modification de produits, et de prédiction de catégories.
-
-#### 4.4.2 Choix technologiques
-
-* **Solution** : FastAPI
-* **Justification** : FastAPI est un framework moderne, rapide (hautes performances) pour construire des API avec Python 3.6+ basé sur les annotations de type standard Python. Il est idéal pour créer des API robustes et performantes.
-
-### 4.5 Service de prédiction
-
-#### 4.5.1 Diagramme de composants
-
-Le diagramme de composants du conteneur de service de prédiction montre les différents composants et leurs interactions. Les composants principaux incluent :
-
-* **Composant de réception des données** : Reçoit les données de produits.
-* **Composant de prédiction** : Prédit les catégories.
-* **Composant de retour des résultats** : Retourne les catégories prédites et les scores de confiance.
-
-#### 4.5.2 Choix technologiques
-
-* **Solution** : BentoML, TensorFlow/Keras
-* **Justification** :
-  * **BentoML** : Plateforme open-source pour le déploiement et la gestion de modèles de machine learning. Elle permet de packager les modèles et de les déployer facilement, ce qui est essentiel pour un système de prédiction.
-  * **TensorFlow/Keras** : Bibliothèques open-source pour la création et l'entraînement de modèles de machine learning. Elles sont idéales pour la création de modèles de prédiction.
-
-### 4.6 Pipeline ML et versioning
-
-#### 4.6.1 Diagramme de composants
-
-Le diagramme de composants du conteneur de pipeline ML et versioning montre les différents composants et leurs interactions. Les composants principaux incluent :
-
-* **Composant de collecte des prédictions** : Collecte les prédictions et corrections manuelles.
-* **Composant de détection de dérive** : Détecte les dérives de données et de concept.
-* **Composant de réentraînement** : Réentraîne les modèles.
-
-#### 4.6.2 Choix technologiques
-
-* **Solution** : MLflow, DVC, Airflow
-* **Justification** :
-  * **MLflow** : Plateforme open-source pour la gestion du cycle de vie des projets de machine learning, y compris l'expérimentation, la reproductibilité et le déploiement.
-  * **DVC** : Outil de versioning de données et de gestion de pipelines de machine learning, intégré avec Git.
-  * **Airflow** : Plateforme pour programmer et surveiller des workflows, idéale pour l'orchestration des pipelines de machine learning.
-
-### 4.7 Monitoring & alerting
-
-#### 4.7.1 Diagramme de composants
-
-Le diagramme de composants du conteneur de monitoring & alerting montre les différents composants et leurs interactions. Les composants principaux incluent :
-
-* **Composant de collecte des métriques** : Collecte les métriques de performance.
-* **Composant de détection des dérives** : Détecte les dérives de données et de concept.
-* **Composant d'alerting** : Alerte en cas de dérive détectée.
-
-#### 4.7.2 Choix technologiques
-
-* **Solution** : Evidently, Prometheus, Grafana
-* **Justification** :
-  * **Evidently** : Outil pour le monitoring et l'analyse de la qualité des données et des modèles de machine learning.
-  * **Prometheus** : Système de monitoring et d'alerting open-source, idéal pour la collecte de métriques.
-  * **Grafana** : Plateforme de visualisation et d'analyse de données, souvent utilisée avec Prometheus pour créer des tableaux de bord interactifs.
-
-### 4.8 Base de données Produits
-
-#### 4.8.1 Modèle de données
-
-* **Produit** : id, titre, description, image_url, catégorie_prédite, score_confiance, catégorie_validée, feedback, date_ajout, date_modification
-* **Utilisateur** : id, email, mot_de_passe_hash, rôle, date_creation, date_dernière_connexion
-* **Logs** : id, utilisateur_id, action, date, détails
-* **Modèle** : id, version, date_entrainement, score, chemin_stockage
-
-#### 4.8.2 Choix technologiques
-
-* **Solution** : PostgreSQL
-* **Justification** : PostgreSQL est un système de gestion de base de données relationnelle open-source, idéal pour persister les données des produits qui sont ajoutés et affichés dans Streamlit.
+* **Google Drive** :  Espace de stockage distant géré par dvc et DagsHub.
 
 ---
 
@@ -387,8 +265,6 @@ Le diagramme de composants du conteneur de monitoring & alerting montre les diff
   * **Système d'exploitation** : Windows 11
   * **Caractéristiques de disponibilité et de résilience** : Utilisation de Docker et Kubernetes pour la conteneurisation et l'orchestration des conteneurs.
   * **Sauvegarde et récupération** : Sauvegardes régulières pour assurer la récupération des données en cas de défaillance.
-
-* **Stockage externe** : Google Drive ou S3 pour les modèles, datasets, images volumineuses.
 
 ### 5.2 Sécurité et Sauvegarde
 
