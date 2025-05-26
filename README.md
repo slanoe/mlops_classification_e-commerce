@@ -77,3 +77,11 @@ python make_dataset.py "../../data/raw" "../../data/preprocessed"
 ## Architecture diagram
 
 > `docker run -it --rm -p 8080:8080 -d -v ./docs/:/usr/local/structurizr structurizr/lite`      <- It will run the structurizr on http://localhost:8080/
+
+## Start the BentoML service
+
+To start the prediction API service:
+
+```bash
+PYTHONPATH=src bentoml serve src.bento_service:svc
+```
