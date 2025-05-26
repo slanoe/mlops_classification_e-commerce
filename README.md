@@ -85,3 +85,11 @@ To start the prediction API service:
 ```bash
 PYTHONPATH=src bentoml serve src.bento_service:svc
 ```
+
+## Start the FastAPI backend
+
+To start the FastAPI backend:
+
+```bash
+uvicorn src.api_fastapi:app --reload
+```

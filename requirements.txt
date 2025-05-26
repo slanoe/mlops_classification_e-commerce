@@ -5,6 +5,7 @@ aiohttp==3.11.18
 aiohttp-retry==2.9.1
 aiosignal==1.3.2
 aiosqlite==0.21.0
+altair==5.5.0
 amqp==5.3.1
 annotated-types==0.7.0
 antlr4-python3-runtime==4.9.3
@@ -22,6 +23,7 @@ backports.functools-lru-cache==2.0.0
 beautifulsoup4==4.13.4
 bentoml==1.4.15
 billiard==4.2.1
+blinker==1.9.0
 cachetools==5.5.2
 cattrs==23.1.2
 celery==5.5.2
@@ -91,12 +93,15 @@ httpx-ws==0.7.2
 hydra-core==1.3.2
 idna==3.10
 importlib_metadata==8.6.1
+iniconfig==2.1.0
 ipykernel==6.29.5
 ipython==8.36.0
 iterative-telemetry==0.0.10
 jedi==0.19.2
 Jinja2==3.1.6
 joblib==1.5.0
+jsonschema==4.24.0
+jsonschema-specifications==2025.4.1
 jupyter_client==8.6.3
 jupyter_core==5.7.2
 kantoku==0.18.3
@@ -114,6 +119,7 @@ mdurl==0.1.2
 ml-dtypes==0.4.1
 multidict==6.4.3
 namex==0.0.9
+narwhals==1.41.0
 nest-asyncio==1.6.0
 networkx==3.4.2
 nltk==3.9.1
@@ -145,7 +151,7 @@ opentelemetry-util-http==0.54b1
 opt_einsum==3.4.0
 optree==0.15.0
 orjson==3.10.18
-packaging==25.0
+packaging==24.2
 pandas==2.2.3
 parso==0.8.4
 pathspec==0.12.1
@@ -154,6 +160,7 @@ pickleshare==0.7.5
 pillow==11.2.1
 pip-requirements-parser==32.0.1
 platformdirs==4.3.8
+pluggy==1.6.0
 prometheus_client==0.22.0
 prompt_toolkit==3.0.51
 propcache==0.3.1
@@ -162,11 +169,13 @@ protobuf==4.25.7
 psutil==7.0.0
 ptyprocess==0.7.0
 pure_eval==0.2.3
+pyarrow==20.0.0
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pycparser==2.22
 pydantic==2.11.4
 pydantic_core==2.33.2
+pydeck==0.9.1
 pydot==4.0.0
 PyDrive2==1.21.3
 pygit2==1.18.0
@@ -175,6 +184,7 @@ pygtrie==2.5.0
 pynndescent==0.5.13
 pyOpenSSL==24.2.1
 pyparsing==3.2.3
+pytest==8.3.5
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
 python-json-logger==3.3.0
@@ -183,10 +193,12 @@ pytz==2025.2
 PyYAML==6.0.2
 pyzmq==26.4.0
 questionary==2.1.0
+referencing==0.36.2
 regex==2024.11.6
 requests==2.32.3
 requests-oauthlib==2.0.0
 rich==14.0.0
+rpds-py==0.25.1
 rsa==4.9.1
 ruamel.yaml==0.18.10
 ruamel.yaml.clib==0.2.12
@@ -207,7 +219,9 @@ soupsieve==2.7
 sqltrie==0.11.2
 stack-data==0.6.3
 starlette==0.46.2
+streamlit==1.45.1
 tabulate==0.9.0
+tenacity==9.1.2
 tensorboard==2.17.1
 tensorboard-data-server==0.7.2
 tensorflow==2.17.0
@@ -215,6 +229,7 @@ tensorflow-estimator==2.15.0
 tensorflow-io-gcs-filesystem==0.37.1
 termcolor==3.1.0
 threadpoolctl==3.6.0
+toml==0.10.2
 tomli==2.2.1
 tomli_w==1.2.0
 tomlkit==0.13.2
@@ -230,6 +245,7 @@ urllib3==2.4.0
 uvicorn==0.34.2
 vine==5.1.0
 voluptuous==0.15.2
+watchdog==6.0.0
 watchfiles==1.0.5
 wcwidth==0.2.13
 Werkzeug==3.1.3
