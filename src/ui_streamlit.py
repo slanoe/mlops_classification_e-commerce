@@ -17,7 +17,7 @@ if "description" not in st.session_state:
 if st.button("Prédire la catégorie"):
     if text:
         response = requests.post(
-            "http://localhost:8000/predict",
+            "http://fastapi:8000/predict",
             json={"text": text}
         )
         if response.status_code == 200:
@@ -59,7 +59,7 @@ if st.session_state.predicted_category:
         # On récupère le code de la catégorie sélectionnée
         cat_code = cat_to_code[selected_cat] if selected_cat in cat_to_code else st.session_state.predicted_category
         response = requests.post(
-            "http://localhost:8000/add_product",
+            "http://fastapi:8000/add_product",
             json={
                 "text": st.session_state.description,
                 "category": cat_code

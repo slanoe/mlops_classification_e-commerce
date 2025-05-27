@@ -11,7 +11,7 @@ class Product(BaseModel):
     text: str
     category: str
 
-BENTO_URL = "http://localhost:3000/predict"
+BENTO_URL = "http://bentoml:3000/predict"  # Utiliser le nom du service Docker Compose
 
 @app.post("/predict")
 def predict(item: Item):

@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  bentoml:
+    image: python:3.10
+    container_name: bentoml
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=src
+    command: bash -c "pip install -r requirements.txt && bentoml serve src.bento_service:svc --host 0.0.0.0 --port 3000"
+    ports:
+      - "3000:3000"
+    depends_on: []
+
+  fastapi:
+    image: python:3.10
+    container_name: fastapi
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: bash -c "pip install -r requirements-fastapi.txt && uvicorn src.api_fastapi:app --host 0.0.0.0 --port 8000 --reload"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - bentoml
+
+  streamlit:
+    image: python:3.10
+    container_name: streamlit
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: bash -c "pip install -r requirements-streamlit.txt && streamlit run src/ui_streamlit.py --server.address 0.0.0.0"
+    ports:
+      - "8501:8501"
+    depends_on:
+      - fastapi
