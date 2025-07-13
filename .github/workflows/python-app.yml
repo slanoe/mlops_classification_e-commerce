@@ -1,44 +1,46 @@
-name: Test API with Docker Compose
+name: Test API with Docker Compose v2
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [master]
+    paths: ['src/**', 'docker-compose.yml', '.github/workflows/**', 'tests/**']
   pull_request:
-    branches: [ "master" ]
+    branches: [master]
 
 jobs:
   test-api:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v3
+      - uses: actions/setup-python@v3
         with:
-          python-version: "3.10"
+          python-version: '3.10'
 
-      - name: Install test dependencies
+      - name: Install test deps
         run: |
-          python -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install pytest requests
 
-      - name: Start services with Docker Compose
-        run: docker-compose up -d --build
+      - name: Show Docker Compose version
+        run: docker compose version
 
-      - name: Wait for BentoML to be ready
+      - name: Build & start services
+        run: docker compose -f docker-compose.yml up -d --build
+
+      - name: Wait for BentoML
         run: |
-          echo "Waiting for BentoML..."
           for i in {1..20}; do
-            curl -s http://localhost:3000/healthz && break
-            echo "Still waiting..."
-            sleep 5
+            if curl -fs http://localhost:3000/healthz >/dev/null; then
+              echo "BentoML is ready"; break
+            fi
+            echo "Waiting…"; sleep 5
           done
 
-      - name: Run API tests with pytest
+      - name: Run API tests
         run: pytest tests/
 
-      - name: Stop Docker services
+      - name: Shut down
         if: always()
-        run: docker-compose down
+        run: docker compose down
