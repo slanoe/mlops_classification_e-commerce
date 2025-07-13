@@ -1,7 +1,5 @@
-Project Name
+Classification de produits e-commerce Rakuten
 ==============================
-
-This project is a starting Pack for MLOps projects based on the subject "movie_recommandation". It's not perfect so feel free to make some modifications on it.
 
 Project Organization
 ------------
@@ -55,11 +53,11 @@ This project requires Python 3.10.
 
 > `sudo apt update && sudo apt install python3.10 python3.10-venv python3.10-dev && sudo apt install python3-virtualenv`      <- It will install Python 3.10 and virtualenv
 
-> `pip install "setuptools<66"`      <- It will downgrade setuptools
-
 > `virtualenv -p python3.10 .venv`      <- It will create a virtual environment named .venv
 
 > `source .venv/bin/activate`  <- It will activate the virtual environment
+
+> `pip install "setuptools<66"`      <- It will downgrade setuptools
 
 > `pip install -r requirements.txt`      <- It will install the required packages
 
@@ -70,9 +68,7 @@ This project requires Python 3.10.
                                          The predictions are saved in data/preprocessed as 'predictions.json'
 
 > You can download the trained models loaded here : https://drive.google.com/drive/folders/1fjWd-NKTE-RZxYOOElrkTdOw2fGftf5M?usp=drive_link and insert them in the models folder
-> 
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
-python make_dataset.py "../../data/raw" "../../data/preprocessed"
+
 
 ## Architecture diagram
 
@@ -83,3 +79,5 @@ python make_dataset.py "../../data/raw" "../../data/preprocessed"
 To start the prediction API service:
 
 > `./run.sh`      <- It will run the Streamlit on http://localhost:8501/
+
+<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
