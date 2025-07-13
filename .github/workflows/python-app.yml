@@ -35,7 +35,7 @@ jobs:
             if curl -fs http://localhost:3000/healthz >/dev/null; then
               echo "BentoML is ready"; break
             fi
-            echo "Waiting…"; sleep 5
+            echo "Waiting…"; sleep 30
           done
 
       - name: Run API tests
