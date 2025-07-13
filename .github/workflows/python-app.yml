@@ -41,7 +41,7 @@ jobs:
           for i in {1..10}; do
             curl -v http://localhost:3000/ && echo "BentoML ready" && exit 0
             echo "Retry $i/10: BentoML not ready"
-            sleep 10
+            sleep 60
           done
           echo "BentoML not available after 10 tries"
           exit 1
