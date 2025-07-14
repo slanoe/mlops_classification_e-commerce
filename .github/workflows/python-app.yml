@@ -47,8 +47,3 @@ jobs:
       - name: Shut down
         if: always()
         run: docker compose down
-        run: pytest tests/
-
-      - name: Shut down
-        if: always()
-        run: docker compose down
