@@ -77,6 +77,17 @@ This project requires Python 3.10.
 > `docker run -it --rm -p 8081:8080 -d -v ./docs/:/usr/local/structurizr structurizr/lite`      <- It will run the structurizr on http://localhost:8081/
 
 
+## Airflow
+
+To start Airflow services:
+
+> `docker-compose -f docker-compose-airflow.yml up airflow-init`      <- Initialize the Airflow database and create admin user
+
+> `docker-compose -f docker-compose-airflow.yml up`      <- Start all Airflow services
+
+The Airflow UI is available at: http://localhost:8080/
+
+
 ## Start the Services
 
 To start all services (BentoML, FastAPI, Streamlit, PostgreSQL, Prometheus, Grafana):
