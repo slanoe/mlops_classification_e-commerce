@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import json
+import os
 
 st.title("Catégorisation de produits e-commerce")
 
@@ -13,12 +14,16 @@ if "predicted_category" not in st.session_state:
 if "description" not in st.session_state:
     st.session_state.description = ""
 
+API_KEY = os.getenv("API_KEY")
+HEADERS = {"X-API-Key": API_KEY}
+
 # Étape 1 : Prédire la catégorie
 if st.button("Prédire la catégorie"):
     if text:
         response = requests.post(
             "http://fastapi:8000/predict",
-            json={"text": text}
+            json={"text": text},
+            headers=HEADERS
         )
         if response.status_code == 200:
             category = response.json()["category"]
@@ -64,7 +69,8 @@ if st.session_state.predicted_category:
                 "text": st.session_state.description,
                 "predicted_category": st.session_state.predicted_category,
                 "selected_category": selected_cat
-            }
+            },
+            headers=HEADERS
         )
         if response.status_code == 200:
             st.success(f"Produit ajouté avec catégorie : {selected_cat}")

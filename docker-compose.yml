@@ -20,6 +20,8 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+    environment:
+      - API_KEY=mysecretkey
     command: bash -c "pip install -r requirements-fastapi.txt && uvicorn src.api_fastapi:app --host 0.0.0.0 --port 8000 --reload"
     ports:
       - "8000:8000"
@@ -32,6 +34,8 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+    environment:
+      - API_KEY=mysecretkey
     command: bash -c "pip install -r requirements-streamlit.txt && streamlit run src/ui_streamlit.py --server.address 0.0.0.0"
     ports:
       - "8501:8501"
