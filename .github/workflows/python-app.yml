@@ -1,49 +1,40 @@
-name: Test API with Docker Compose v2
+name: Build and Push Docker Images
 
 on:
   push:
     branches: [master]
-    paths: ['src/**', 'docker-compose.yml', '.github/workflows/**', 'tests/**']
-  pull_request:
-    branches: [master]
+    paths: ['src/**', 'docker-compose.yml', 'Dockerfile*']
 
 jobs:
-  test-api:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v3
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
         with:
-          python-version: '3.10'
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install test deps
+      - name: Build and push images
         run: |
-          pip install --upgrade pip
-          pip install pytest requests
+          # Build images
+          docker compose build
 
-      - name: Show Docker Compose version
-        run: docker compose version
+          # Tag images
+          docker tag mlops_classification_e-commerce-bentoml:latest ghcr.io/${{ github.repository }}/bentoml:latest
+          docker tag mlops_classification_e-commerce-fastapi:latest ghcr.io/${{ github.repository }}/fastapi:latest
+          docker tag mlops_classification_e-commerce-streamlit:latest ghcr.io/${{ github.repository }}/streamlit:latest
+          docker tag mlops_classification_e-commerce-prometheus-exporter:latest ghcr.io/${{ github.repository }}/prometheus-exporter:latest
 
-      - name: Build & start services
-        run: docker compose -f docker-compose.yml up -d --build
-
-      - name: Wait for services to be ready
-        run: |
-          # Wait for BentoML to be healthy
-          echo "Waiting for BentoML to be ready..."
-          timeout 300s bash -c 'while [[ "$(docker inspect --format="{{.State.Health.Status}}" bentoml)" != "healthy" ]]; do sleep 5; done' || exit 1
-          
-          # Additional verification
-          echo "Testing BentoML endpoint..."
-          curl --retry 5 --retry-delay 10 -v http://localhost:3000/healthz
-
-      - name: Run API tests
-        run: |
-          sleep 10  # Additional safety margin
-          pytest tests/
-
-      - name: Shut down
-        if: always()
-        run: docker compose down
+          # Push images
+          docker push ghcr.io/${{ github.repository }}/bentoml:latest
+          docker push ghcr.io/${{ github.repository }}/fastapi:latest
+          docker push ghcr.io/${{ github.repository }}/streamlit:latest
+          docker push ghcr.io/${{ github.repository }}/prometheus-exporter:latest
