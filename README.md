@@ -45,7 +45,7 @@ Project Organization
     │   │   └── train_model.py
     │   └── config         <- Describe the parameters used in train_model.py and predict_model.py
 
-## Python Version
+## Development
 
 This project requires Python 3.10.
 
@@ -74,7 +74,7 @@ This project requires Python 3.10.
 
 ## Architecture diagram
 
-> `docker run -it --rm -p 8080:8080 -d -v ./docs/:/usr/local/structurizr structurizr/lite`      <- It will run the structurizr on http://localhost:8080/
+> `docker run -it --rm -p 8081:8080 -d -v ./docs/:/usr/local/structurizr structurizr/lite`      <- It will run the structurizr on http://localhost:8081/
 
 
 ## Start the Services
@@ -99,6 +99,7 @@ To stop all services:
 The application includes monitoring capabilities:
 
 > Prometheus is available at: http://localhost:9090/
+
 > Grafana dashboard is available at: http://localhost:3001/d/fe484e94-dd3a-4b2c-9462-53c0f5cbe50e/drift?orgId=1&from=now-10m&to=now&timezone=browser&refresh=5s
 
 The following metric is exposed from the PostgreSQL database:
