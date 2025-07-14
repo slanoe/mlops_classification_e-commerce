@@ -24,4 +24,4 @@ with open(CSV_FILE, newline='', encoding='utf-8') as csvfile:
         except Exception as e:
             print(f"[ERREUR] {e}")
 
-        time.sleep(1)
+        time.sleep(0.1)

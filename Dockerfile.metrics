@@ -1,0 +1,8 @@
+FROM python:3.10
+
+WORKDIR /app
+COPY src/metrics_exporter.py .
+
+RUN pip install prometheus-client psycopg2-binary
+
+CMD ["python", "metrics_exporter.py"]

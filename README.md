@@ -67,6 +67,8 @@ This project requires Python 3.10.
                                         
                                          The predictions are saved in data/preprocessed as 'predictions.json'
 
+> `python tests/simulate_add_products.py`  <- It will simulate the addition of products in the PostgreSQL database
+
 > You can download the trained models loaded here : https://drive.google.com/drive/folders/1fjWd-NKTE-RZxYOOElrkTdOw2fGftf5M?usp=drive_link and insert them in the models folder
 
 
@@ -74,10 +76,34 @@ This project requires Python 3.10.
 
 > `docker run -it --rm -p 8080:8080 -d -v ./docs/:/usr/local/structurizr structurizr/lite`      <- It will run the structurizr on http://localhost:8080/
 
-## Start the BentoML, FastAPI and Streamlit services
 
-To start the prediction API service:
+## Start the Services
 
-> `./run.sh`      <- It will run the Streamlit on http://localhost:8501/
+To start all services (BentoML, FastAPI, Streamlit, PostgreSQL, Prometheus, Grafana):
+
+> `docker compose up -d`      <- It will start all services in detached mode
+
+Available endpoints:
+- BentoML API: http://localhost:3000
+- FastAPI: http://localhost:8000
+- Streamlit UI: http://localhost:8501
+- Grafana: http://localhost:3001
+
+To stop all services:
+
+> `docker compose down`
+
+
+## Monitoring
+
+The application includes monitoring capabilities:
+
+> Prometheus is available at: http://localhost:9090/
+> Grafana dashboard is available at: http://localhost:3001/d/fe484e94-dd3a-4b2c-9462-53c0f5cbe50e/drift?orgId=1&from=now-10m&to=now&timezone=browser&refresh=5s
+
+The following metric is exposed from the PostgreSQL database:
+- `product_category_drift`: Monitors the distribution of product categories to detect potential data drift
+
+
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
