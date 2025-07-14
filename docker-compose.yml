@@ -13,15 +13,11 @@ services:
     ports:
       - "3000:3000"
     depends_on: []
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
 
   fastapi:
-    image: python:3.10
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
     container_name: fastapi
     working_dir: /app
     volumes:
@@ -35,7 +31,9 @@ services:
       - bentoml
 
   streamlit:
-    image: python:3.10
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
     container_name: streamlit
     working_dir: /app
     volumes:

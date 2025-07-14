@@ -1,0 +1,15 @@
+FROM python:3.10
+
+WORKDIR /app
+
+COPY requirements-streamlit.txt .
+COPY src src/
+COPY models models/
+
+RUN pip install -r requirements-streamlit.txt
+
+EXPOSE 8501
+
+ENV API_KEY=mysecretkey
+
+CMD ["streamlit", "run", "src/ui_streamlit.py", "--server.address", "0.0.0.0"]

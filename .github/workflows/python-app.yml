@@ -3,6 +3,10 @@ name: Build and Push Docker Images
 on:
   push:
     branches: [master]
+    paths:
+      - 'src/**'
+      - 'Dockerfile.*'
+      - 'docker-compose.yml'
 
 jobs:
   build:
@@ -14,6 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -21,19 +28,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push images
-        run: |
-          # Build images
-          docker compose build
+      - name: Build and push FastAPI
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.fastapi
+          push: true
+          tags: ghcr.io/${{ github.repository }}/fastapi:latest
 
-          # Tag images
-          docker tag mlops_classification_e-commerce-bentoml:latest ghcr.io/${{ github.repository }}/bentoml:latest
-          docker tag mlops_classification_e-commerce-fastapi:latest ghcr.io/${{ github.repository }}/fastapi:latest
-          docker tag mlops_classification_e-commerce-streamlit:latest ghcr.io/${{ github.repository }}/streamlit:latest
-          docker tag mlops_classification_e-commerce-prometheus-exporter:latest ghcr.io/${{ github.repository }}/prometheus-exporter:latest
+      - name: Build and push Streamlit
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.streamlit
+          push: true
+          tags: ghcr.io/${{ github.repository }}/streamlit:latest
 
-          # Push images
-          docker push ghcr.io/${{ github.repository }}/bentoml:latest
-          docker push ghcr.io/${{ github.repository }}/fastapi:latest
-          docker push ghcr.io/${{ github.repository }}/streamlit:latest
-          docker push ghcr.io/${{ github.repository }}/prometheus-exporter:latest
+      - name: Build and push Prometheus Exporter
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.prometheus-exporter
+          push: true
+          tags: ghcr.io/${{ github.repository }}/prometheus-exporter:latest
