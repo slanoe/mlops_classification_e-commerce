@@ -13,11 +13,30 @@ DB_CONFIG = {
 # Métrique Prometheus : % de mismatch entre predicted et selected
 category_drift = Gauge("product_category_drift", "Taux de dérive entre catégorie prédite et sélectionnée")
 
+def table_exists(cursor, table_name):
+    cursor.execute("""
+        SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' 
+            AND table_name = %s
+        );
+    """, (table_name,))
+    return cursor.fetchone()[0]
+
 def compute_drift():
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         cursor = conn.cursor()
 
+        # Vérifier si la table existe
+        if not table_exists(cursor, 'products'):
+            print("[INFO] La table 'products' n'existe pas encore")
+            category_drift.set(0)
+            cursor.close()
+            conn.close()
+            return
+
+        # Si la table existe, exécuter les requêtes
         cursor.execute("SELECT COUNT(*) FROM products")
         total = cursor.fetchone()[0]
 
