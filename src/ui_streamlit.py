@@ -62,7 +62,7 @@ if st.session_state.predicted_category:
             "http://fastapi:8000/add_product",
             json={
                 "text": st.session_state.description,
-                "category": cat_code
+                "category": selected_cat
             }
         )
         if response.status_code == 200:
