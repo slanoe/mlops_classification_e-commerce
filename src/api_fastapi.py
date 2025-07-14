@@ -3,7 +3,6 @@ from pydantic import BaseModel
 import requests
 import psycopg2
 from psycopg2.extras import RealDictCursor
-import os
 
 app = FastAPI()
 
@@ -12,7 +11,8 @@ class Item(BaseModel):
 
 class Product(BaseModel):
     text: str
-    category: str
+    predicted_category: str
+    selected_category: str
 
 BENTO_URL = "http://bentoml:3000/predict"
 
@@ -46,23 +46,24 @@ def add_product(product: Product):
             CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
                 description TEXT NOT NULL,
-                category TEXT NOT NULL
+                predicted_category TEXT NOT NULL,
+                selected_category TEXT NOT NULL
             )
         """)
         conn.commit()
 
         # Insérer le produit
         cursor.execute("""
-            INSERT INTO products (description, category)
-            VALUES (%s, %s)
+            INSERT INTO products (description, predicted_category, selected_category)
+            VALUES (%s, %s, %s)
             RETURNING id
-        """, (product.text, product.category))
+        """, (product.text, product.predicted_category, product.selected_category))
         new_id = cursor.fetchone()["id"]
         conn.commit()
 
         cursor.close()
         conn.close()
 
-        return {"id": new_id, "description": product.text, "category": product.category}
+        return {"id": new_id, "description": product.text, "predicted_category": product.predicted_category, "selected_category": product.selected_category}
     except Exception as e:
         return {"error": str(e)}
