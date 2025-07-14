@@ -61,7 +61,7 @@ services:
   prometheus-exporter:
     build:
       context: .
-      dockerfile: Dockerfile.metrics
+      dockerfile: Dockerfile.prometheus-exporter
     container_name: prometheus_exporter
     ports:
       - "9100:9100"
