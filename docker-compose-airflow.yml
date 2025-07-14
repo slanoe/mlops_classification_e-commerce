@@ -64,6 +64,7 @@ x-airflow-common: &airflow-common
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
+    - ./data:/opt/airflow/data
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
   depends_on:
     redis:
@@ -82,7 +83,7 @@ services:
     volumes:
       - postgres-airflow-volume:/var/lib/postgresql/data
     ports:
-      - 5433:5432  # Change port to avoid conflict
+      - 5433:5432
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
