@@ -29,24 +29,24 @@ jobs:
       - name: Build & start services
         run: docker compose -f docker-compose.yml up -d --build
 
-      - name: Show Docker containers
-        run: docker ps -a
-
-      - name: Logs from BentoML
-        run: docker logs bentoml
-
-      - name: Wait for BentoML
+      - name: Wait for services to be ready
         run: |
-          echo "Testing http://localhost:3000/ with curl..."
-          for i in {1..10}; do
-            curl -v http://localhost:3000/ && echo "BentoML ready" && exit 0
-            echo "Retry $i/10: BentoML not ready"
-            sleep 60
-          done
-          echo "BentoML not available after 10 tries"
-          exit 1
+          # Wait for BentoML to be healthy
+          echo "Waiting for BentoML to be ready..."
+          timeout 300s bash -c 'while [[ "$(docker inspect --format="{{.State.Health.Status}}" bentoml)" != "healthy" ]]; do sleep 5; done' || exit 1
+          
+          # Additional verification
+          echo "Testing BentoML endpoint..."
+          curl --retry 5 --retry-delay 10 -v http://localhost:3000/healthz
 
       - name: Run API tests
+        run: |
+          sleep 10  # Additional safety margin
+          pytest tests/
+
+      - name: Shut down
+        if: always()
+        run: docker compose down
         run: pytest tests/
 
       - name: Shut down
